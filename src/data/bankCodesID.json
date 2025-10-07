@@ -1,0 +1,82 @@
+[
+  {
+    "bank_code": "140397",
+    "bank_name": "Bank Central Asia (BCA)"
+  },
+  {
+    "bank_code": "90010",
+    "bank_name": "Bank Negara Indonesia (BNI)"
+  },
+  {
+    "bank_code": "20307",
+    "bank_name": "Bank Rakyat Indonesia (BRI)"
+  },
+  {
+    "bank_code": "80017",
+    "bank_name": "Bank Mandiri"
+  },
+  {
+    "bank_code": "111274",
+    "bank_name": "Bank Danamon Indonesia"
+  },
+  {
+    "bank_code": "280024",
+    "bank_name": "Bank OCBC NISP"
+  },
+  {
+    "bank_code": "190017",
+    "bank_name": "Bank Panin"
+  },
+  {
+    "bank_code": "130307",
+    "bank_name": "Bank Permata"
+  },
+  {
+    "bank_code": "220026",
+    "bank_name": "Bank CIMB Niaga"
+  },
+  {
+    "bank_code": "4260448",
+    "bank_name": "Bank Mega"
+  },
+  {
+    "bank_code": "1470011",
+    "bank_name": "Bank Muamalat"
+  },
+  {
+    "bank_code": "1110012",
+    "bank_name": "Bank DKI"
+  },
+  {
+    "bank_code": "1100019",
+    "bank_name": "Bank Jabar (BJB)"
+  },
+  {
+    "bank_code": "1150014",
+    "bank_name": "Bank Jambi"
+  },
+  {
+    "bank_code": "1330012",
+    "bank_name": "Bank Bengkulu"
+  },
+  {
+    "bank_code": "1290013",
+    "bank_name": "Bank BPD Bali"
+  },
+  {
+    "bank_code": "1230015",
+    "bank_name": "Bank Kalimantan Barat (Kalbar)"
+  },
+  {
+    "bank_code": "1240018",
+    "bank_name": "Bank Kalimantan Timur (Kaltim)"
+  },
+  {
+    "bank_code": "1250011",
+    "bank_name": "Bank Kalimantan Tengah (Kalteng)"
+  },
+  {
+    "bank_code": "1180013",
+    "bank_name": "Bank Nagari"
+  }
+]

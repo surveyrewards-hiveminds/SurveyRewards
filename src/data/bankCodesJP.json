@@ -1,0 +1,58 @@
+[
+  {
+    "bank_code": "0005",
+    "bank_name": "三菱UFJ銀行 (MUFG Bank)"
+  },
+  {
+    "bank_code": "0009",
+    "bank_name": "三井住友銀行 (Sumitomo Mitsui Banking Corporation)"
+  },
+  {
+    "bank_code": "0010",
+    "bank_name": "みずほ銀行 (Mizuho Bank)"
+  },
+  {
+    "bank_code": "0017",
+    "bank_name": "埼玉りそな銀行 (Saitama Resona Bank)"
+  },
+  {
+    "bank_code": "0038",
+    "bank_name": "三井住友信託銀行 (Sumitomo Mitsui Trust Bank)"
+  },
+  {
+    "bank_code": "0040",
+    "bank_name": "みずほ信託銀行 (Mizuho Trust & Banking)"
+  },
+  {
+    "bank_code": "0041",
+    "bank_name": "三菱UFJ信託銀行 (Mitsubishi UFJ Trust and Banking)"
+  },
+  {
+    "bank_code": "0149",
+    "bank_name": "ゆうちょ銀行 (Japan Post Bank)"
+  },
+  {
+    "bank_code": "0001",
+    "bank_name": "みずほ銀行 (Mizuho Bank) - 旧第一勧業銀行店舗"
+  },
+  {
+    "bank_code": "0398",
+    "bank_name": "楽天銀行 (Rakuten Bank)"
+  },
+  {
+    "bank_code": "0033",
+    "bank_name": "ジャパンネット銀行 (PayPay Bank)"
+  },
+  {
+    "bank_code": "0397",
+    "bank_name": "住信SBIネット銀行 (Sumishin SBI Net Bank)"
+  },
+  {
+    "bank_code": "0515",
+    "bank_name": "イオン銀行 (AEON Bank)"
+  },
+  {
+    "bank_code": "0039",
+    "bank_name": "三井住友カード (Sumitomo Mitsui Card)"
+  }
+]
