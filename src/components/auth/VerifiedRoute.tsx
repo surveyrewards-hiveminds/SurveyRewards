@@ -21,7 +21,7 @@ export default function VerifiedRoute({
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (!authLoading && !profileLoading && user) {
+    if (!authLoading && !profileLoading && !user) {
       // Remove all local/session storage and Supabase session
       localStorage.clear();
       sessionStorage.clear();
