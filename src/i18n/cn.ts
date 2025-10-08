@@ -701,6 +701,11 @@ const cn = {
   "verificationPage.pendingMessage":
     "我们正在处理您的身份验证。\n验证完成后，我们会通知您。",
 
+  // Verification to Check Email
+  "verificationCheckEmail.title": "验证您的电子邮件",
+  "verificationCheckEmail.message":
+    "一封验证电子邮件已发送到您的电子邮件地址。请检查您的收件箱并单击验证链接以完成注册。",
+
   // Credit Payments
   "creditPayments.title": "购买积分",
   "creditPayments.subtitle": "您可以在这里购买用于问卷奖励的积分。",
