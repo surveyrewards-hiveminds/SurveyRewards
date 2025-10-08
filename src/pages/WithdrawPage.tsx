@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWiseTransfer } from "../hooks/useWiseTransfer";
 import { useCreditSystem } from "../hooks/useCreditSystem";
@@ -6,10 +6,12 @@ import { useCreditDeduction } from "../hooks/useCreditDeduction";
 import { useNotifications } from "../hooks/useNotifications";
 import { useProfile } from "../context/ProfileContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useWiseQuote } from "../hooks/useWiseQuote";
 import bankCodesID from "../data/bankCodesID.json";
 import bankCodesJP from "../data/bankCodesJP.json";
 import { supabase } from "../lib/supabase";
 import { getTranslation } from "../i18n";
+import { useConfigValue } from "../hooks/useAppConfig";
 
 // Helper function for string interpolation
 function interpolateString(
@@ -173,6 +175,17 @@ export default function WithdrawPage() {
   const { createNotification } = useNotifications();
   const { userID } = useProfile();
   const { language } = useLanguage();
+  const {
+    quote,
+    loading: quoteLoading,
+    error: quoteError,
+    createQuote,
+  } = useWiseQuote();
+  const [feeAccepted, setFeeAccepted] = useState(false);
+  const [transferFee, setTransferFee] = useState<number | null>(null);
+  const { value: minimumWithdrawalAmount } = useConfigValue(
+    "minimum_withdrawal_amount"
+  );
 
   // Add credits back function (for refunds)
   const addCredits = async (
@@ -254,6 +267,46 @@ export default function WithdrawPage() {
     setForm((prev) => ({ ...prev, credits: userCredits.toString() }));
   };
 
+  const handleGetQuote = async () => {
+    // Validate credits to withdraw
+    const creditsToWithdraw = Number(form.credits);
+    if (
+      !creditsToWithdraw ||
+      creditsToWithdraw < (minimumWithdrawalAmount ?? 1000)
+    ) {
+      alert(
+        getTranslation(
+          "withdraw.validation.minimumWithdrawal",
+          language
+        ).replace("{amount}", (minimumWithdrawalAmount ?? 1000).toString())
+      );
+      return;
+    }
+
+    if (creditsToWithdraw > userCredits) {
+      alert(
+        getTranslation("withdraw.validation.insufficientCredits", language)
+      );
+      return;
+    }
+
+    // Fetch the quote
+    await createQuote("JPY", form.recipientCurrency, creditsToWithdraw);
+    console.log("Quote fetched:", quote);
+    if (quote) {
+      setTransferFee(quote.fee);
+    }
+  };
+
+  useEffect(() => {
+    // if has quote then set fee
+    if (quote) {
+      setTransferFee(quote.fee);
+    } else {
+      setTransferFee(null);
+    }
+  }, [quote, form.recipientCurrency]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     const getCountry = (currency: string) => {
       switch (currency) {
@@ -268,10 +321,23 @@ export default function WithdrawPage() {
 
     e.preventDefault();
 
+    if (!feeAccepted) {
+      alert(getTranslation("withdraw.validation.acceptFee", language));
+      return;
+    }
+
     // Validate credits to withdraw
     const creditsToWithdraw = Number(form.credits);
-    if (!creditsToWithdraw || creditsToWithdraw <= 0) {
-      alert(getTranslation("withdraw.validation.validAmount", language));
+    if (
+      !creditsToWithdraw ||
+      creditsToWithdraw < (minimumWithdrawalAmount ?? 1000)
+    ) {
+      alert(
+        getTranslation(
+          "withdraw.validation.minimumWithdrawal",
+          language
+        ).replace("{amount}", (minimumWithdrawalAmount ?? 1000).toString())
+      );
       return;
     }
 
@@ -435,6 +501,13 @@ export default function WithdrawPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4">
+      {quoteLoading && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-4 rounded-lg">
+            <p>{getTranslation("withdraw.fetchingQuote", language)}</p>
+          </div>
+        </div>
+      )}
       {/* Back Button - Outside the main card */}
       <button
         className="mb-4 text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
@@ -478,7 +551,7 @@ export default function WithdrawPage() {
                 value={form.credits}
                 onChange={handleChange}
                 className="w-full border rounded p-2"
-                min="1"
+                min="1000"
                 max={userCredits}
                 required
                 disabled={creditsLoading}
@@ -636,16 +709,61 @@ export default function WithdrawPage() {
               </div>
             ))}
           </div>
+          {transferFee !== null && (
+            <div className="p-4 bg-yellow-100 border-l-4 border-yellow-500">
+              <p>
+                {getTranslation("withdraw.transferFee", language)}:{" "}
+                <strong>
+                  {transferFee} {form.recipientCurrency}
+                </strong>
+              </p>
+              <p>
+                {getTranslation("withdraw.totalReceived", language)}:{" "}
+                <strong>
+                  {Number(form.credits) - transferFee} {form.recipientCurrency}{" "}
+                </strong>
+              </p>
+              <div className="mt-2">
+                <label className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={feeAccepted}
+                    onChange={(e) => setFeeAccepted(e.target.checked)}
+                    className="mr-2"
+                  />
+                  {getTranslation("withdraw.acceptFee", language)}
+                </label>
+              </div>
+            </div>
+          )}
+
+          {quoteError && (
+            <div className="text-red-600 font-medium">{quoteError}</div>
+          )}
+
           {/* Add more recipient details fields as needed */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded font-semibold disabled:opacity-60"
-            disabled={loading}
-          >
-            {loading
-              ? getTranslation("withdraw.processing", language)
-              : getTranslation("withdraw.withdraw", language)}
-          </button>
+          {transferFee === null ? (
+            <button
+              type="button"
+              onClick={handleGetQuote}
+              className="w-full bg-green-600 text-white py-2 rounded font-semibold disabled:opacity-60"
+              disabled={quoteLoading}
+            >
+              {quoteLoading
+                ? getTranslation("withdraw.fetchingQuote", language)
+                : getTranslation("withdraw.getQuote", language)}
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2 rounded font-semibold disabled:opacity-60"
+              disabled={loading || !feeAccepted}
+            >
+              {loading
+                ? getTranslation("withdraw.processing", language)
+                : getTranslation("withdraw.withdraw", language)}
+            </button>
+          )}
         </form>
         {result && (
           <div className="mt-4">

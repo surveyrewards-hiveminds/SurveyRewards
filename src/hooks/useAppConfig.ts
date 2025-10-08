@@ -5,6 +5,7 @@ interface AppConfig {
   veriff_enabled: boolean;
   maintenance_mode: boolean;
   registration_enabled: boolean;
+  minimum_withdrawal_amount: number;
 }
 
 interface UseAppConfigResult {
@@ -48,9 +49,7 @@ export function useAppConfig(): UseAppConfigResult {
         const key = item.key as keyof AppConfig;
         // Parse JSON boolean values
         configObj[key] =
-          typeof item.value === "boolean"
-            ? item.value
-            : item.value === "true" || item.value === true;
+          typeof item.value !== "boolean" ? item.value : item.value === true;
       });
 
       // Set defaults for missing values
@@ -58,6 +57,7 @@ export function useAppConfig(): UseAppConfigResult {
         veriff_enabled: configObj.veriff_enabled ?? true,
         maintenance_mode: configObj.maintenance_mode ?? false,
         registration_enabled: configObj.registration_enabled ?? true,
+        minimum_withdrawal_amount: configObj.minimum_withdrawal_amount ?? 1000,
       });
     } catch (err) {
       console.error("Failed to fetch app config:", err);
@@ -67,6 +67,7 @@ export function useAppConfig(): UseAppConfigResult {
         veriff_enabled: false, // Disable Veriff if config can't be loaded
         maintenance_mode: false,
         registration_enabled: true,
+        minimum_withdrawal_amount: 1000,
       });
     } finally {
       setLoading(false);

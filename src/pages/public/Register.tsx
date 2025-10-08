@@ -317,14 +317,14 @@ export default function Register() {
         } catch (veriffErr) {
           console.error("Veriff error:", veriffErr);
           // If Veriff fails, still redirect to thank you page but log the error
-          navigate("/verification-thank-you");
+          navigate("/verification-check-email");
         }
       } else {
         console.log(
           "Veriff verification is disabled - redirecting to thank you page"
         );
-        // Veriff is disabled, redirect to verification pending page since user still need to verify their email
-        navigate("/verification-pending");
+        // Veriff is disabled, redirect to verification check email page since user still need to verify their email
+        navigate("/verification-check-email");
       }
     } catch (err) {
       console.error("Registration error:", err);

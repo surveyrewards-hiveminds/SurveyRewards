@@ -24,6 +24,7 @@ import History from "./pages/History";
 import AnswerSurvey from "./pages/AnswerSurvey";
 import WithdrawPage from "./pages/WithdrawPage";
 import SurveyPreview from "./pages/SurveyPreview";
+import VerificationCheckEmail from "./pages/public/VerificationCheckEmail";
 
 export default function AppRoutes() {
   return (
@@ -169,6 +170,10 @@ export default function AppRoutes() {
       <Route
         path="/verification-thank-you"
         element={<VerificationThankYou />}
+      />
+      <Route
+        path="/verification-check-email"
+        element={<VerificationCheckEmail />}
       />
     </Routes>
   );

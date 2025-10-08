@@ -737,6 +737,11 @@ const en = {
   "verificationPage.pendingMessage":
     "We are processing your identity verification.\nWe will notify you as soon as the verification is complete.",
 
+  // Verification to Check Email
+  "verificationCheckEmail.title": "Verify Your Email",
+  "verificationCheckEmail.message":
+    "A verification email has been sent to your email address. Please check your inbox and click the verification link to complete your registration.",
+
   // Credit Payments
   "creditPayments.title": "Purchase Credits",
   "creditPayments.subtitle":
@@ -1013,6 +1018,14 @@ const en = {
   "withdraw.withdrawalSuccessful":
     "Withdrawal successful! Transfer ID: {transferId}",
   "withdraw.error": "Error: {error}",
+  "withdraw.validation.minimumWithdrawal":
+    "Minimum withdrawal is {amount} credits.",
+  "withdraw.fetchingQuote": "Fetching quote...",
+  "withdraw.validation.acceptFee": "Please accept the fee to proceed.",
+  "withdraw.transferFee": "Transfer Fee",
+  "withdraw.acceptFee": "I accept the transfer fee.",
+  "withdraw.getQuote": "Get Quote",
+  "withdraw.totalReceived": "Total to be Received",
 
   // Withdrawal Validation Messages
   "withdraw.validation.validAmount": "Please enter a valid amount of credits.",

@@ -957,6 +957,13 @@ const cn = {
   "withdraw.backToDashboard": "返回仪表盘",
   "withdraw.withdrawalSuccessful": "提现成功！转账ID：{transferId}",
   "withdraw.error": "错误：{error}",
+  "withdraw.validation.minimumWithdrawal": "最低提款金额为{amount}积分。",
+  "withdraw.fetchingQuote": "正在获取报价...",
+  "withdraw.validation.acceptFee": "请接受费用以继续。",
+  "withdraw.transferFee": "转账费用",
+  "withdraw.acceptFee": "我接受转账费用。",
+  "withdraw.getQuote": "获取报价",
+  "withdraw.totalReceived": "总计收到",
 
   // Withdrawal Validation Messages
   "withdraw.validation.validAmount": "请输入有效的积分金额",

@@ -730,6 +730,11 @@ const ja = {
   "verificationPage.pendingMessage":
     "本人確認を処理しています。\n認証が完了次第ご連絡いたします。",
 
+  // Verification to Check Email
+  "verificationCheckEmail.title": "メールを確認してください",
+  "verificationCheckEmail.message":
+    "登録に使用したメールアドレスに確認メールを送信しました。メール内のリンクをクリックしてアカウントを有効化してください。",
+
   // Credit Payments
   "creditPayments.title": "クレジット購入",
   "creditPayments.subtitle":
@@ -1000,6 +1005,14 @@ const ja = {
   "withdraw.backToDashboard": "ダッシュボードに戻る",
   "withdraw.withdrawalSuccessful": "出金が完了しました！振込ID: {transferId}",
   "withdraw.error": "エラー: {error}",
+  "withdraw.validation.minimumWithdrawal":
+    "最低出金額は{amount}クレジットです。",
+  "withdraw.fetchingQuote": "見積もりを取得中...",
+  "withdraw.validation.acceptFee": "続行するには手数料に同意してください。",
+  "withdraw.transferFee": "送金手数料",
+  "withdraw.acceptFee": "送金手数料に同意します。",
+  "withdraw.getQuote": "見積もりを取得",
+  "withdraw.totalReceived": "受取総額",
 
   // Withdrawal Validation Messages
   "withdraw.validation.validAmount": "有効なクレジット額を入力してください",

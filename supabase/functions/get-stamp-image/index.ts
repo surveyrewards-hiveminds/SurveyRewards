@@ -32,9 +32,9 @@ serve(async (req) => {
     const allowedOrigins = [
       "http://localhost:5173",
       "http://localhost:3000",
-      "https://iryaejkypjberswiskgt.supabase.co", // Your Supabase project URL
+      "https://jxlijcrytnqmjujtuxts.supabase.co", // Your Supabase project URL
       // Add your production domain here when ready
-      // "https://your-production-domain.com",
+      "https://www.survey-reward.com",
     ];
 
     const isValidOrigin = allowedOrigins.some((origin) =>

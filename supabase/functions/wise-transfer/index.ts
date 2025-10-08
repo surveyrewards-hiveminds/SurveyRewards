@@ -7,7 +7,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const WISE_API_BASE = "https://api.sandbox.transferwise.tech/v1";
+const WISE_API_BASE = "https://api.wise.com/v1";
 
 interface WiseTransferRequest {
   action:
@@ -169,6 +169,39 @@ async function executeCompleteWithdrawal(
   } = data;
 
   try {
+    const supabaseClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+      { global: { headers: { Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}` } } }
+    );
+
+    const { data: config, error: configError } = await supabaseClient
+      .from("app_config")
+      .select("value")
+      .eq("key", "minimum_withdrawal_amount")
+      .single();
+
+    if (configError) {
+      console.error("Error fetching minimum withdrawal amount:", configError);
+      // Default to 1000 if config is not available
+      if (amount < 1000) {
+        return {
+          status: "error",
+          step: "validation",
+          error: `Withdrawal amount must be at least 1000`,
+        };
+      }
+    } else {
+      const minimumWithdrawalAmount = Number(config.value);
+      if (amount < minimumWithdrawalAmount) {
+        return {
+          status: "error",
+          step: "validation",
+          error: `Withdrawal amount must be at least ${minimumWithdrawalAmount}`,
+        };
+      }
+    }
+
     // Step 1: Create Quote
     console.log("Step 1: Creating quote...");
     const body = {

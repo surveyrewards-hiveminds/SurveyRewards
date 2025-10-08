@@ -745,6 +745,11 @@ const id = {
   "verificationPage.pendingMessage":
     "Kami sedang memproses verifikasi identitas Anda.\nKami akan memberitahu Anda segera setelah verifikasi selesai.",
 
+  // Verification to Check Email
+  "verificationCheckEmail.title": "Verifikasi Email Anda",
+  "verificationCheckEmail.message":
+    "Email verifikasi telah dikirim ke alamat email Anda. Silakan periksa kotak masuk Anda dan klik tautan verifikasi untuk menyelesaikan pendaftaran Anda.",
+
   // Credit Payments
   "creditPayments.title": "Beli Kredit",
   "creditPayments.subtitle":
@@ -1024,6 +1029,13 @@ const id = {
   "withdraw.withdrawalSuccessful":
     "Penarikan berhasil! ID Transfer: {transferId}",
   "withdraw.error": "Kesalahan: {error}",
+  "withdraw.validation.minimumWithdrawal": "Minimal penarikan {amount} kredit.",
+  "withdraw.fetchingQuote": "Kalkulasi Penarikan...",
+  "withdraw.validation.acceptFee": "Silakan terima biaya untuk melanjutkan.",
+  "withdraw.transferFee": "Biaya Transfer",
+  "withdraw.acceptFee": "Saya menerima biaya transfer.",
+  "withdraw.getQuote": "Kalkulasi Penarikan",
+  "withdraw.totalReceived": "Total yang Diterima",
 
   // Withdrawal Validation Messages
   "withdraw.validation.validAmount": "Harap masukkan jumlah kredit yang valid.",
