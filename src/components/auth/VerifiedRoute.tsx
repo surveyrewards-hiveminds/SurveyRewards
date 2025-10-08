@@ -11,7 +11,7 @@ export default function VerifiedRoute({
   children: React.ReactNode;
 }) {
   const { user, loading: authLoading } = useAuth();
-  const { isVerified, loading: profileLoading } = useProfile();
+  const { loading: profileLoading } = useProfile();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,22 +21,18 @@ export default function VerifiedRoute({
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (!authLoading && !profileLoading && user && isVerified === false) {
+    if (!authLoading && !profileLoading && user) {
       // Remove all local/session storage and Supabase session
       localStorage.clear();
       sessionStorage.clear();
       supabase.auth.signOut();
       navigate("/verification-pending", { replace: true });
     }
-  }, [authLoading, profileLoading, user, isVerified, navigate]);
+  }, [authLoading, profileLoading, user, navigate]);
 
   // Only show loading if we don't have profile data yet
   if (authLoading || profileLoading) return <div>Loading...</div>;
   if (!user) return null;
-  if (isVerified === false) {
-    // Already handled by useEffect above
-    return null;
-  }
 
   return <Layout>{children}</Layout>;
 }

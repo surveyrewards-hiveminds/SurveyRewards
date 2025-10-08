@@ -323,8 +323,8 @@ export default function Register() {
         console.log(
           "Veriff verification is disabled - redirecting to thank you page"
         );
-        // Veriff is disabled, redirect to thank you page (same as when verification is complete)
-        navigate("/verification-thank-you");
+        // Veriff is disabled, redirect to verification pending page since user still need to verify their email
+        navigate("/verification-pending");
       }
     } catch (err) {
       console.error("Registration error:", err);
