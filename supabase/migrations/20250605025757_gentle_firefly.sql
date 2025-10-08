@@ -62,7 +62,7 @@ CREATE POLICY "Users can insert own profile"
   ON profiles
   FOR INSERT
   TO authenticated
-  WITH CHECK (auth.uid() = id);
+  WITH CHECK (true);
 
 -- Create function to handle updated_at
 CREATE OR REPLACE FUNCTION handle_updated_at()
