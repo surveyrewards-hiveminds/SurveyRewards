@@ -1351,5 +1351,24 @@ const cn = {
     "取消问卷将使进行中的回答无效。您确定要取消吗？",
   "confirmationModal.manualStartSurveyDescription":
     "此问卷将手动启动。一旦启动，将通知参与者。",
+
+  "forgotPassword.title": "忘记密码",
+  "forgotPassword.subtitle":
+    "请输入您的电子邮件地址，我们将发送一个重置密码的链接给您。",
+  "forgotPassword.emailLabel": "电子邮件地址",
+  "forgotPassword.sending": "发送中...",
+  "forgotPassword.sendLink": "发送重置链接",
+  "forgotPassword.remembered": "还记得密码吗？",
+  "forgotPassword.backToLogin": "返回登录",
+  "forgotPassword.success": "重置密码的链接已发送到您的邮箱。",
+  "forgotPassword.errorEmpty": "请输入您的电子邮件地址",
+
+  "resetPassword.setNewPassword": "设置新密码",
+  "resetPassword.newPassword": "新密码",
+  "resetPassword.confirmPassword": "确认密码",
+  "resetPassword.resetPassword": "重置密码",
+  "resetPassword.fillAllFields": "请填写所有必填字段。",
+  "resetPassword.passwordsDoNotMatch": "两次输入的密码不一致。",
+  "resetPassword.success": "您的密码已成功重置！",
 };
 export default cn;

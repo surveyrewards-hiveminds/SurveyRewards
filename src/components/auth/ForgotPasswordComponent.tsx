@@ -1,52 +1,53 @@
 import React, { useState } from "react";
-import { X, Mail, Lock, AlertCircle } from "lucide-react";
+import { X, Mail, AlertCircle, CheckCircle2 } from "lucide-react";
 import { supabase } from "../../lib/supabase";
 import { useNavigate } from "react-router-dom";
 import { Text } from "../language/Text";
 
-interface LoginModalProps {
+interface ForgotPasswordProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Rename to LoginComponent
-export function LoginComponent({ isOpen, onClose }: LoginModalProps) {
+export function ForgotPasswordComponent({
+  isOpen,
+  onClose,
+}: ForgotPasswordProps) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError("Please fill in all fields");
+    setError("");
+    setSuccess("");
+
+    if (!email) {
+      setError("Please enter your email address");
       return;
     }
 
-    // Supabase login
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+    setLoading(true);
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
     });
+
     if (error) {
       setError(error.message);
-      return;
+    } else {
+      setSuccess("A password reset link has been sent to your email.");
     }
 
-    // On success, navigate to dashboard
-    navigate("/dashboard");
-  };
-
-  const handleRegisterClick = () => {
-    onClose();
-    navigate("/register");
+    setLoading(false);
   };
 
   return (
     <div className="flex min-h-full items-center justify-center p-4">
-      {/* Removed Backdrop */}
       <div className="relative w-full max-w-md transform overflow-hidden rounded-lg bg-white shadow-xl transition-all">
         <div className="absolute right-4 top-4">
           <button
@@ -59,8 +60,12 @@ export function LoginComponent({ isOpen, onClose }: LoginModalProps) {
 
         <div className="p-8">
           <h2 className="mb-6 text-2xl font-bold text-center text-[#020B2C]">
-            <Text tid="login.welcomeBack" />
+            <Text tid="forgotPassword.title" />
           </h2>
+
+          <p className="text-sm text-gray-600 text-center mb-6">
+            <Text tid="forgotPassword.subtitle" />
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
@@ -69,10 +74,16 @@ export function LoginComponent({ isOpen, onClose }: LoginModalProps) {
                 {error}
               </div>
             )}
+            {success && (
+              <div className="flex items-center gap-2 text-green-600 text-sm bg-green-50 p-3 rounded-md">
+                <CheckCircle2 className="h-4 w-4" />
+                <Text tid="forgotPassword.success" />
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                <Text tid="login.emailLabel" />
+                <Text tid="forgotPassword.emailLabel" />
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -88,66 +99,29 @@ export function LoginComponent({ isOpen, onClose }: LoginModalProps) {
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                <Text tid="login.passwordLabel" />
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="px-4 py-2 block w-full pl-10 rounded-md border-gray-300 shadow-sm focus:border-[#020B2C] focus:ring-[#020B2C] sm:text-sm"
-                  placeholder="••••••••"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-[#020B2C] focus:ring-[#020B2C]"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 block text-sm text-gray-700"
-                >
-                  <Text tid="login.rememberMe" />
-                </label>
-              </div>
-
-              <button
-                type="button"
-                className="text-sm text-[#020B2C] hover:text-[#020B2C]/80"
-                onClick={() => {
-                  navigate("/forgot-password");
-                  onClose();
-                }}
-              >
-                <Text tid="login.forgotPassword" />
-              </button>
-            </div>
-
             <button
               type="submit"
+              disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#020B2C] hover:bg-[#020B2C]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#020B2C]"
             >
-              <Text tid="login.signIn" />
+              {loading ? (
+                <Text tid="forgotPassword.sending" />
+              ) : (
+                <Text tid="forgotPassword.sendLink" />
+              )}
             </button>
 
             <div className="text-center text-sm text-gray-500">
-              <Text tid="login.noAccount" />{" "}
+              <Text tid="forgotPassword.remembered" />{" "}
               <button
                 type="button"
-                onClick={handleRegisterClick}
+                onClick={() => {
+                  onClose();
+                  navigate("/login");
+                }}
                 className="text-[#020B2C] hover:text-[#020B2C]/80 font-medium"
               >
-                <Text tid="login.registerNow" />
+                <Text tid="forgotPassword.backToLogin" />
               </button>
             </div>
           </form>

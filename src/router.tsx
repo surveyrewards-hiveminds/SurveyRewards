@@ -25,6 +25,8 @@ import AnswerSurvey from "./pages/AnswerSurvey";
 import WithdrawPage from "./pages/WithdrawPage";
 import SurveyPreview from "./pages/SurveyPreview";
 import VerificationCheckEmail from "./pages/public/VerificationCheckEmail";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 export default function AppRoutes() {
   return (
@@ -36,6 +38,8 @@ export default function AppRoutes() {
       <Route path="/terms" element={<Terms />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       {/* Protected Routes */}
       <Route
         path="/dashboard"

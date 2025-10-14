@@ -1429,5 +1429,25 @@ const ja = {
     "アンケートを中止すると、進行中の回答は無効になります。本当に中止しますか？",
   "confirmationModal.manualStartSurveyDescription":
     "このアンケートは手動で開始されます。開始すると参加者に通知されます。",
+
+  "forgotPassword.title": "パスワードをお忘れですか？",
+  "forgotPassword.subtitle":
+    "メールアドレスを入力すると、パスワードをリセットするためのリンクをお送りします。",
+  "forgotPassword.emailLabel": "メールアドレス",
+  "forgotPassword.sending": "送信中...",
+  "forgotPassword.sendLink": "リセットリンクを送信",
+  "forgotPassword.remembered": "パスワードを思い出しましたか？",
+  "forgotPassword.backToLogin": "ログインに戻る",
+  "forgotPassword.success":
+    "パスワードリセット用のリンクをメールに送信しました。",
+  "forgotPassword.errorEmpty": "メールアドレスを入力してください",
+
+  "resetPassword.setNewPassword": "新しいパスワードを設定",
+  "resetPassword.newPassword": "新しいパスワード",
+  "resetPassword.confirmPassword": "パスワードを確認",
+  "resetPassword.resetPassword": "パスワードをリセット",
+  "resetPassword.fillAllFields": "すべての必須項目を入力してください。",
+  "resetPassword.passwordsDoNotMatch": "パスワードが一致しません。",
+  "resetPassword.success": "パスワードが正常にリセットされました！",
 };
 export default ja;
