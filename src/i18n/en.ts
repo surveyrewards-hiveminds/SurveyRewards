@@ -1454,5 +1454,25 @@ const en = {
     "Canceling the survey will invalidate any ongoing responses. Are you sure you want to cancel?",
   "confirmationModal.manualStartSurveyDescription":
     "This survey will be started manually. Participants will be notified once it begins.",
+
+  "forgotPassword.title": "Forgot Password",
+  "forgotPassword.subtitle":
+    "Enter your email address and we'll send you a link to reset your password.",
+  "forgotPassword.emailLabel": "Email Address",
+  "forgotPassword.sending": "Sending...",
+  "forgotPassword.sendLink": "Send Reset Link",
+  "forgotPassword.remembered": "Remember your password?",
+  "forgotPassword.backToLogin": "Back to Login",
+  "forgotPassword.success":
+    "A password reset link has been sent to your email.",
+  "forgotPassword.errorEmpty": "Please enter your email address",
+
+  "resetPassword.setNewPassword": "Set a New Password",
+  "resetPassword.newPassword": "New Password",
+  "resetPassword.confirmPassword": "Confirm Password",
+  "resetPassword.resetPassword": "Reset Password",
+  "resetPassword.fillAllFields": "Please fill in all required fields.",
+  "resetPassword.passwordsDoNotMatch": "Passwords do not match.",
+  "resetPassword.success": "Your password has been successfully reset!",
 };
 export default en;

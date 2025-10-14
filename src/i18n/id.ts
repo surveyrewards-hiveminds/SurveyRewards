@@ -1474,5 +1474,25 @@ const id = {
     "Membatalkan survei akan membuat tanggapan yang sedang berlangsung menjadi tidak valid. Apakah Anda yakin ingin membatalkan?",
   "confirmationModal.manualStartSurveyDescription":
     "Survei ini akan dimulai secara manual. Partisipan akan diberitahu setelah dimulai.",
+
+  "forgotPassword.title": "Lupa Kata Sandi",
+  "forgotPassword.subtitle":
+    "Masukkan alamat email Anda dan kami akan mengirimkan tautan untuk mengatur ulang kata sandi Anda.",
+  "forgotPassword.emailLabel": "Alamat Email",
+  "forgotPassword.sending": "Mengirim...",
+  "forgotPassword.sendLink": "Kirim Tautan Reset",
+  "forgotPassword.remembered": "Ingat kata sandi Anda?",
+  "forgotPassword.backToLogin": "Kembali ke Masuk",
+  "forgotPassword.success":
+    "Tautan untuk mengatur ulang kata sandi telah dikirim ke email Anda.",
+  "forgotPassword.errorEmpty": "Silakan masukkan alamat email Anda",
+
+  "resetPassword.setNewPassword": "Atur Kata Sandi Baru",
+  "resetPassword.newPassword": "Kata Sandi Baru",
+  "resetPassword.confirmPassword": "Konfirmasi Kata Sandi",
+  "resetPassword.resetPassword": "Atur Ulang Kata Sandi",
+  "resetPassword.fillAllFields": "Harap isi semua kolom yang diperlukan.",
+  "resetPassword.passwordsDoNotMatch": "Kata sandi tidak cocok.",
+  "resetPassword.success": "Kata sandi Anda berhasil diatur ulang!",
 };
 export default id;

@@ -186,6 +186,7 @@ export default function Register() {
           data: {
             name: formData.name,
           },
+          emailRedirectTo: `${window.location.origin}/verification-thank-you`,
         },
       });
 
