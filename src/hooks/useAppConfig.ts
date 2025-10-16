@@ -37,6 +37,7 @@ export function useAppConfig(): UseAppConfigResult {
           "veriff_enabled",
           "maintenance_mode",
           "registration_enabled",
+          "minimum_withdrawal_amount",
         ]);
 
       if (configError) {
