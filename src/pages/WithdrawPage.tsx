@@ -12,6 +12,7 @@ import bankCodesJP from "../data/bankCodesJP.json";
 import { supabase } from "../lib/supabase";
 import { getTranslation } from "../i18n";
 import { useConfigValue } from "../hooks/useAppConfig";
+import { set } from "lodash";
 
 // Helper function for string interpolation
 function interpolateString(
@@ -306,6 +307,21 @@ export default function WithdrawPage() {
       setTransferFee(null);
     }
   }, [quote, form.recipientCurrency]);
+
+  // Re-quote automatically when amount or currency changes after quote exists
+  useEffect(() => {
+    const creditsToWithdraw = Number(form.credits);
+    // Only trigger if there's already a quote shown and user typed a valid amount
+    if (
+      quote &&
+      !quoteLoading &&
+      creditsToWithdraw > 0 &&
+      !isNaN(creditsToWithdraw)
+    ) {
+      setTransferFee(null); // reset fee while fetching new quote
+      setFeeAccepted(false); // reset acceptance since fee might change
+    }
+  }, [form.credits, form.recipientCurrency]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     const getCountry = (currency: string) => {
@@ -714,13 +730,13 @@ export default function WithdrawPage() {
               <p>
                 {getTranslation("withdraw.transferFee", language)}:{" "}
                 <strong>
-                  {transferFee} {form.recipientCurrency}
+                  {transferFee} {CURRENCIES[0].code}
                 </strong>
               </p>
               <p>
                 {getTranslation("withdraw.totalReceived", language)}:{" "}
                 <strong>
-                  {Number(form.credits) - transferFee} {form.recipientCurrency}{" "}
+                  {Number(form.credits) - transferFee} {CURRENCIES[0].code}{" "}
                 </strong>
               </p>
               <div className="mt-2">
