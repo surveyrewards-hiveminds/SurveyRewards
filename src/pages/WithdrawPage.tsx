@@ -567,7 +567,7 @@ export default function WithdrawPage() {
                 value={form.credits}
                 onChange={handleChange}
                 className="w-full border rounded p-2"
-                min="1000"
+                min={minimumWithdrawalAmount ?? 1000}
                 max={userCredits}
                 required
                 disabled={creditsLoading}
