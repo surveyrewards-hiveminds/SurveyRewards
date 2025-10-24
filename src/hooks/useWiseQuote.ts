@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { supabase } from "../lib/supabase";
 import { debounce } from "lodash";
 
@@ -42,13 +42,22 @@ export function useWiseQuote() {
         },
       });
 
+      // Handle Supabase invocation error (network/edge failure)
       if (error) {
-        throw new Error(`Wise API error: ${error.message}`);
+        throw new Error(`Supabase error: ${error.message}`);
       }
 
+      // Handle backend logic error (Wise API or validation)
+      if (data?.status === "error") {
+        throw new Error(data.error || "Failed to create quote");
+      }
+
+      // Success: store the quote
       setQuote(data);
     } catch (err: any) {
+      console.error("Error creating Wise quote:", err);
       setError(err.message);
+      setQuote(null);
     } finally {
       setLoading(false);
     }
