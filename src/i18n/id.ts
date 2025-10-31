@@ -1494,5 +1494,40 @@ const id = {
   "resetPassword.fillAllFields": "Harap isi semua kolom yang diperlukan.",
   "resetPassword.passwordsDoNotMatch": "Kata sandi tidak cocok.",
   "resetPassword.success": "Kata sandi Anda berhasil diatur ulang!",
+
+  "withdraw.history.title": "Riwayat Penarikan",
+  "withdraw.history.newWithdrawal": "Penarikan Baru",
+  "withdraw.history.loading": "Memuat riwayat penarikan Anda...",
+  "withdraw.history.empty":
+    "Belum ada riwayat penarikan. Mulailah penarikan pertama Anda!",
+
+  "withdraw.processingNotice": "Sedang memproses permintaan penarikan Anda…",
+  "withdraw.processingSub":
+    "Proses ini mungkin memakan waktu beberapa menit. Mohon jangan meninggalkan atau menyegarkan halaman ini.",
+  "withdraw.successModal.title": "Permintaan Penarikan Dikirim",
+  "withdraw.successModal.message":
+    "Permintaan penarikan Anda berhasil. Silakan tunggu Administrator untuk meninjau dan menyetujui penarikan Anda.",
+  "withdraw.successModal.button": "Lihat Daftar Penarikan",
+  "withdraw.result.successTitle": "Penarikan Berhasil",
+  "withdraw.result.errorTitle": "Penarikan Gagal",
+  "withdraw.result.successMessage":
+    "Penarikan Anda telah berhasil diselesaikan.",
+  "withdraw.result.errorMessage":
+    "Maaf, penarikan Anda tidak dapat diselesaikan. Silakan coba lagi nanti.",
+
+  "notifications.title.withdrawal": "Penarikan Dimulai",
+  "notifications.withdrawal":
+    "Penarikan sebesar {amount} kredit sedang diproses.",
+  "notifications.withdrawal_generic": "Penarikan Anda sedang diproses.",
+
+  "notifications.title.withdrawal_failed": "Penarikan Gagal",
+  "notifications.withdrawal_failed":
+    "Penarikan sebesar {amount} kredit gagal. Alasan: {reason}",
+  "notifications.withdrawal_failed_generic": "Penarikan Anda gagal.",
+
+  "notifications.title.withdrawal_successful": "Penarikan Berhasil",
+  "notifications.withdrawal_successful":
+    "Penarikan sebesar {amount} {currency} berhasil.",
+  "notifications.withdrawal_successful_generic": "Penarikan Anda berhasil.",
 };
 export default id;

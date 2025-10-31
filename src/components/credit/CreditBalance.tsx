@@ -17,7 +17,7 @@ export function CreditBalance({ showWithdraw = false }: CreditBalanceProps) {
   };
 
   const handleWithdraw = () => {
-    navigate("/withdraw");
+    navigate("/withdrawals");
   };
 
   return (

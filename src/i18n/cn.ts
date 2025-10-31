@@ -1370,5 +1370,35 @@ const cn = {
   "resetPassword.fillAllFields": "请填写所有必填字段。",
   "resetPassword.passwordsDoNotMatch": "两次输入的密码不一致。",
   "resetPassword.success": "您的密码已成功重置！",
+
+  "withdraw.history.title": "提现记录",
+  "withdraw.history.newWithdrawal": "新的提现",
+  "withdraw.history.loading": "正在加载您的提现记录...",
+  "withdraw.history.empty": "暂无提现记录，开始您的第一次提现吧！",
+
+  "withdraw.processingNotice": "正在处理您的提现请求……",
+  "withdraw.processingSub": "这可能需要几分钟。请不要离开或刷新此页面。",
+  "withdraw.successModal.title": "提现请求已提交",
+  "withdraw.successModal.message":
+    "您的提现请求已成功，请等待管理员审核并批准您的提现。",
+  "withdraw.successModal.button": "前往提现记录",
+  "withdraw.result.successTitle": "提现成功",
+  "withdraw.result.errorTitle": "提现失败",
+  "withdraw.result.successMessage": "您的提现已成功完成。",
+  "withdraw.result.errorMessage": "很抱歉，您的提现未能完成，请稍后再试。",
+
+  "notifications.title.withdrawal": "提现已发起",
+  "notifications.withdrawal": "您提取的 {amount} 积分正在处理中。",
+  "notifications.withdrawal_generic": "您的提现正在处理中。",
+
+  "notifications.title.withdrawal_failed": "提现失败",
+  "notifications.withdrawal_failed":
+    "您提取的 {amount} 积分失败。原因：{reason}",
+  "notifications.withdrawal_failed_generic": "您的提现失败。",
+
+  "notifications.title.withdrawal_successful": "提现成功",
+  "notifications.withdrawal_successful":
+    "您提取的 {amount} {currency} 已成功到账。",
+  "notifications.withdrawal_successful_generic": "您的提现已成功。",
 };
 export default cn;

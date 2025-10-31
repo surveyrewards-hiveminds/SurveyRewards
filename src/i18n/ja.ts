@@ -1449,5 +1449,37 @@ const ja = {
   "resetPassword.fillAllFields": "すべての必須項目を入力してください。",
   "resetPassword.passwordsDoNotMatch": "パスワードが一致しません。",
   "resetPassword.success": "パスワードが正常にリセットされました！",
+
+  "withdraw.history.title": "出金履歴",
+  "withdraw.history.newWithdrawal": "新しい出金",
+  "withdraw.history.loading": "出金履歴を読み込み中...",
+  "withdraw.history.empty": "出金履歴がありません。最初の出金を始めましょう！",
+
+  "withdraw.processingNotice": "出金リクエストを処理中です…",
+  "withdraw.processingSub":
+    "数分かかる場合があります。このページを離れたり再読み込みしないでください。",
+  "withdraw.successModal.title": "出金リクエストが送信されました",
+  "withdraw.successModal.message":
+    "出金リクエストが正常に送信されました。管理者の確認と承認をお待ちください。",
+  "withdraw.successModal.button": "出金履歴へ",
+  "withdraw.result.successTitle": "出金が成功しました",
+  "withdraw.result.errorTitle": "出金に失敗しました",
+  "withdraw.result.successMessage": "出金が正常に完了しました。",
+  "withdraw.result.errorMessage":
+    "申し訳ありませんが、出金を完了できませんでした。後でもう一度お試しください。",
+
+  "notifications.title.withdrawal": "出金を開始しました",
+  "notifications.withdrawal": "{amount} クレジットの出金が処理中です。",
+  "notifications.withdrawal_generic": "出金が処理中です。",
+
+  "notifications.title.withdrawal_failed": "出金に失敗しました",
+  "notifications.withdrawal_failed":
+    "{amount} クレジットの出金に失敗しました。理由: {reason}",
+  "notifications.withdrawal_failed_generic": "出金に失敗しました。",
+
+  "notifications.title.withdrawal_successful": "出金が成功しました",
+  "notifications.withdrawal_successful":
+    "{amount} {currency} の出金が完了しました。",
+  "notifications.withdrawal_successful_generic": "出金が完了しました。",
 };
 export default ja;

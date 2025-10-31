@@ -161,6 +161,50 @@ export function translateNotificationMessage(
         "notifications.surveyCompletedGeneric" as any,
         language as any
       );
+    case "withdrawal":
+      if (data?.amount) {
+        const template = getTranslation(
+          "notifications.withdrawal",
+          language as any
+        );
+        return interpolateString(template, { amount: data.amount.toString() });
+      }
+      return getTranslation(
+        "notifications.withdrawal_generic",
+        language as any
+      );
+
+    case "withdrawal_failed":
+      if (data?.amount && data?.reason) {
+        const template = getTranslation(
+          "notifications.withdrawal_failed",
+          language as any
+        );
+        return interpolateString(template, {
+          amount: data.amount.toString(),
+          reason: data.reason,
+        });
+      }
+      return getTranslation(
+        "notifications.withdrawal_failed_generic",
+        language as any
+      );
+
+    case "withdrawal_successful":
+      if (data?.source_amount && data?.source_currency) {
+        const template = getTranslation(
+          "notifications.withdrawal_successful",
+          language as any
+        );
+        return interpolateString(template, {
+          amount: data.source_amount.toString(),
+          currency: data.source_currency,
+        });
+      }
+      return getTranslation(
+        "notifications.withdrawal_successful_generic",
+        language as any
+      );
 
     default:
       // For unknown types or fallback, try to extract dynamic parts
@@ -199,6 +243,9 @@ export function translateNotificationTitle(
     survey_reward: "notifications.titles.surveyReward",
     survey_completed: "notifications.titles.surveyCompleted",
     system: "notifications.titles.system",
+    withdrawal: "notifications.title.withdrawal",
+    withdrawal_failed: "notifications.title.withdrawal_failed",
+    withdrawal_successful: "notifications.title.withdrawal_successful",
   };
 
   const translationKey = titleMap[type];

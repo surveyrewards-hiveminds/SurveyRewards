@@ -74,34 +74,61 @@ export function NotificationDetail() {
   const getNotificationIcon = (type: Notification["type"]) => {
     switch (type) {
       case "survey_live":
-        return <CheckCircle className="h-8 w-8 text-green-600" />;
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
       case "survey_invalid":
-        return <AlertCircle className="h-8 w-8 text-red-600" />;
+        return <AlertCircle className="h-5 w-5 text-red-600" />;
       case "survey_completed":
-        return <CheckCircle className="h-8 w-8 text-blue-600" />;
+        return <CheckCircle className="h-5 w-5 text-blue-600" />;
       case "credit_refund":
-        return <CreditCard className="h-8 w-8 text-blue-600" />;
+        return <CreditCard className="h-5 w-5 text-blue-600" />;
       case "payment_required":
-        return <AlertCircle className="h-8 w-8 text-orange-600" />;
+        return <AlertCircle className="h-5 w-5 text-orange-600" />;
+      case "lottery_winner":
+        return <CreditCard className="h-5 w-5 text-purple-600" />;
+      case "lottery_distributed":
+        return <CreditCard className="h-5 w-5 text-purple-600" />;
+      case "survey_reward":
+        return <CreditCard className="h-5 w-5 text-green-600" />;
+      case "withdrawal":
+        return <CreditCard className="h-5 w-5 text-blue-600" />;
+      case "withdrawal_failed":
+        return <AlertCircle className="h-5 w-5 text-red-600" />;
+      case "withdrawal_successful":
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
       default:
-        return <Bell className="h-8 w-8 text-gray-600" />;
+        return <Bell className="h-5 w-5 text-gray-600" />;
     }
   };
 
-  const getNotificationColor = (type: Notification["type"]) => {
+  const getNotificationColor = (type: Notification["type"], read: boolean) => {
+    const base = read ? "bg-gray-50" : "bg-white";
+    if (read) return base;
+
     switch (type) {
       case "survey_live":
-        return "text-green-600 bg-green-50 border-green-200";
+        return "bg-green-50 border-l-4 border-green-500";
       case "survey_invalid":
-        return "text-red-600 bg-red-50 border-red-200";
+        return "bg-red-50 border-l-4 border-red-500";
       case "survey_completed":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "bg-blue-50 border-l-4 border-blue-500";
       case "credit_refund":
-        return "text-blue-600 bg-blue-50 border-blue-200";
+        return "bg-blue-50 border-l-4 border-blue-500";
       case "payment_required":
-        return "text-orange-600 bg-orange-50 border-orange-200";
+        return "bg-orange-50 border-l-4 border-orange-500";
+      case "lottery_winner":
+        return "bg-purple-50 border-l-4 border-purple-500";
+      case "lottery_distributed":
+        return "bg-purple-50 border-l-4 border-purple-500";
+      case "survey_reward":
+        return "bg-green-50 border-l-4 border-green-500";
+      case "withdrawal":
+        return "bg-blue-50 border-l-4 border-blue-500";
+      case "withdrawal_failed":
+        return "bg-red-50 border-l-4 border-red-500";
+      case "withdrawal_successful":
+        return "bg-green-50 border-l-4 border-green-500";
       default:
-        return "text-gray-600 bg-gray-50 border-gray-200";
+        return "bg-gray-50 border-l-4 border-gray-500";
     }
   };
 

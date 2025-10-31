@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useWiseTransfer } from "../hooks/useWiseTransfer";
 import { useCreditSystem } from "../hooks/useCreditSystem";
-import { useCreditDeduction } from "../hooks/useCreditDeduction";
-import { useNotifications } from "../hooks/useNotifications";
 import { useProfile } from "../context/ProfileContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useWiseQuote } from "../hooks/useWiseQuote";
@@ -12,26 +10,20 @@ import bankCodesJP from "../data/bankCodesJP.json";
 import { supabase } from "../lib/supabase";
 import { getTranslation } from "../i18n";
 import { useConfigValue } from "../hooks/useAppConfig";
-import { set } from "lodash";
 
-// Helper function for string interpolation
+// Helper
 function interpolateString(
   template: string,
   variables: Record<string, string>
 ): string {
-  return template.replace(/\{(\w+)\}/g, (match, key) => {
-    return variables[key] || match;
-  });
+  return template.replace(/\{(\w+)\}/g, (_, key) => variables[key] || _);
 }
 
 const CURRENCIES = [
   { code: "JPY", labelKey: "withdraw.currency.jpy", country: "Japan" },
   { code: "IDR", labelKey: "withdraw.currency.idr", country: "Indonesia" },
-  // { code: "CNY", labelKey: "withdraw.currency.cny", country: "China" },
-  // { code: "USD", labelKey: "withdraw.currency.usd", country: "United States" },
 ];
 
-// Bank account field configurations based on currency
 interface BankField {
   name: string;
   labelKey: string;
@@ -122,58 +114,12 @@ const BANK_FIELDS: Record<string, BankField[]> = {
       required: true,
     },
   ],
-  CNY: [
-    {
-      name: "bankCode",
-      labelKey: "withdraw.bankFields.bankCode",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "accountNumber",
-      labelKey: "withdraw.bankFields.accountNumber",
-      type: "text",
-      required: true,
-    },
-  ],
-  USD: [
-    {
-      name: "routingNumber",
-      labelKey: "withdraw.bankFields.routingNumber",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "accountNumber",
-      labelKey: "withdraw.bankFields.accountNumber",
-      type: "text",
-      required: true,
-    },
-    {
-      name: "accountType",
-      labelKey: "withdraw.bankFields.accountType",
-      type: "select",
-      required: true,
-      options: [
-        {
-          value: "checking",
-          labelKey: "withdraw.bankFields.accountType.checking",
-        },
-        {
-          value: "savings",
-          labelKey: "withdraw.bankFields.accountType.savings",
-        },
-      ],
-    },
-  ],
 };
 
 export default function WithdrawPage() {
   const navigate = useNavigate();
   const { loading, result, initiateTransfer } = useWiseTransfer();
-  const { userCredits, creditsLoading, refreshUserCredits } = useCreditSystem();
-  const { deductCredits } = useCreditDeduction();
-  const { createNotification } = useNotifications();
+  const { userCredits, creditsLoading } = useCreditSystem();
   const { userID } = useProfile();
   const { language } = useLanguage();
   const {
@@ -188,61 +134,39 @@ export default function WithdrawPage() {
     "minimum_withdrawal_amount"
   );
 
-  // Add credits back function (for refunds)
-  const addCredits = async (
-    userId: string,
-    amount: number,
-    description: string
-  ): Promise<boolean> => {
-    try {
-      const { error: txError } = await supabase
-        .from("credit_transactions")
-        .insert({
-          user_id: userId,
-          transaction_type: "refund",
-          credit_amount: Math.abs(amount), // Positive amount for refund
-          status: "completed",
-          description: description,
-        });
-
-      if (txError) {
-        console.error("Refund error:", txError);
-        return false;
-      }
-
-      // Refresh user credits after successful refund
-      await refreshUserCredits();
-      return true;
-    } catch (error) {
-      console.error("Refund error:", error);
-      return false;
-    }
-  };
   const [form, setForm] = useState({
-    sourceCurrency: CURRENCIES[0].code, // Always JPY for credits
+    sourceCurrency: CURRENCIES[0].code,
     credits: "",
-    amount: "",
     name: "",
     recipientCurrency: CURRENCIES[0].code,
     bankDetails: {} as Record<string, string>,
-    customBankCode: "", // For manual bank code input
+    customBankCode: "",
   });
+
+  const [showResultModal, setShowResultModal] = useState(false);
+
+  // Handle quote changes
+  useEffect(() => {
+    if (quote) setTransferFee(quote.fee);
+    else setTransferFee(null);
+  }, [quote]);
+
+  // Show modal when result changes
+  useEffect(() => {
+    if (result && (result.status === "success" || result.status === "error")) {
+      setShowResultModal(true);
+    }
+  }, [result]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
-
-    // Handle bank details separately
     if (name.startsWith("bank_")) {
       const fieldName = name.replace("bank_", "");
       setForm((prev) => ({
         ...prev,
-        bankDetails: {
-          ...prev.bankDetails,
-          [fieldName]: value,
-        },
-        // Clear custom bank code if switching away from "OTHER"
+        bankDetails: { ...prev.bankDetails, [fieldName]: value },
         customBankCode:
           fieldName === "bankCode" && value !== "OTHER"
             ? ""
@@ -251,25 +175,16 @@ export default function WithdrawPage() {
     } else if (name === "customBankCode") {
       setForm({ ...form, customBankCode: value });
     } else if (name === "recipientCurrency") {
-      // Reset bank details when changing currency
-      setForm({
-        ...form,
-        [name]: value,
-        bankDetails: {},
-        customBankCode: "",
-      });
+      setForm({ ...form, [name]: value, bankDetails: {}, customBankCode: "" });
     } else {
       setForm({ ...form, [name]: value });
     }
   };
 
-  // Auto-fill all credits
-  const handleWithdrawAll = () => {
-    setForm((prev) => ({ ...prev, credits: userCredits.toString() }));
-  };
+  const handleWithdrawAll = () =>
+    setForm((p) => ({ ...p, credits: userCredits.toString() }));
 
   const handleGetQuote = async () => {
-    // Validate credits to withdraw
     const creditsToWithdraw = Number(form.credits);
     if (
       !creditsToWithdraw ||
@@ -283,66 +198,22 @@ export default function WithdrawPage() {
       );
       return;
     }
-
     if (creditsToWithdraw > userCredits) {
       alert(
         getTranslation("withdraw.validation.insufficientCredits", language)
       );
       return;
     }
-
-    // Fetch the quote
     await createQuote("JPY", form.recipientCurrency, creditsToWithdraw);
-    console.log("Quote fetched:", quote);
-    if (quote) {
-      setTransferFee(quote.fee);
-    }
   };
 
-  useEffect(() => {
-    // if has quote then set fee
-    if (quote) {
-      setTransferFee(quote.fee);
-    } else {
-      setTransferFee(null);
-    }
-  }, [quote, form.recipientCurrency]);
-
-  // Re-quote automatically when amount or currency changes after quote exists
-  useEffect(() => {
-    const creditsToWithdraw = Number(form.credits);
-    // Only trigger if there's already a quote shown and user typed a valid amount
-    if (
-      quote &&
-      !quoteLoading &&
-      creditsToWithdraw > 0 &&
-      !isNaN(creditsToWithdraw)
-    ) {
-      setTransferFee(null); // reset fee while fetching new quote
-      setFeeAccepted(false); // reset acceptance since fee might change
-    }
-  }, [form.credits, form.recipientCurrency]);
-
   const handleSubmit = async (e: React.FormEvent) => {
-    const getCountry = (currency: string) => {
-      switch (currency) {
-        case "JPY":
-          return "JP";
-        case "USD":
-          return "US";
-        case "IDR":
-          return "ID";
-      }
-    };
-
     e.preventDefault();
-
     if (!feeAccepted) {
       alert(getTranslation("withdraw.validation.acceptFee", language));
       return;
     }
 
-    // Validate credits to withdraw
     const creditsToWithdraw = Number(form.credits);
     if (
       !creditsToWithdraw ||
@@ -371,160 +242,83 @@ export default function WithdrawPage() {
       return;
     }
 
-    // Validate custom bank code if "OTHER" is selected
-    const bankCodeField = form.bankDetails.bankCode;
-    if (bankCodeField === "OTHER" && !form.customBankCode.trim()) {
-      const message =
-        language === "ja"
-          ? "「その他」を選択した場合、カスタム銀行コードを入力してください。"
-          : language === "cn"
-          ? '选择"其他"时，请输入自定义银行代码。'
-          : language === "id"
-          ? "Harap masukkan kode bank kustom saat memilih 'Lainnya'."
-          : "Please enter a custom bank code when 'Other' is selected.";
-      alert(message);
-      return;
-    }
-
     try {
-      // Step 1: Deduct credits first (before attempting withdrawal)
-      const deductionSuccess = await deductCredits(
-        userID,
-        creditsToWithdraw,
-        `Withdrawal request - ${creditsToWithdraw} credits to ${form.recipientCurrency}`
-      );
-
-      if (!deductionSuccess) {
-        alert(getTranslation("withdraw.validation.failedToDeduct", language));
-        return;
-      }
-
-      // Step 2: Initiate Wise transfer
-      // For now, assume 1 credit = 1 JPY (customize if needed)
       const amountJPY = creditsToWithdraw;
-
-      // Prepare bank details with custom bank code if "OTHER" was selected
       const finalBankDetails = { ...form.bankDetails };
-      if (finalBankDetails.bankCode === "OTHER") {
+      if (finalBankDetails.bankCode === "OTHER")
         finalBankDetails.bankCode = form.customBankCode;
-      }
 
-      const transferResult = await initiateTransfer(
-        form.sourceCurrency, // Source is always JPY (where credits come from)
-        form.recipientCurrency, // Target should be the recipient currency
+      await initiateTransfer(
+        form.sourceCurrency,
+        form.recipientCurrency,
         amountJPY,
         {
           name: form.name,
           currency: form.recipientCurrency,
-          details: {
-            ...finalBankDetails,
-            country: getCountry(form.recipientCurrency),
-          },
-        }
+          details: { ...finalBankDetails },
+        },
+        userID
       );
-
-      // Step 3: Handle the result directly from the returned value
-      if (transferResult?.status === "success") {
-        const successMessage = getTranslation(
-          "withdraw.notifications.success",
-          language
-        );
-        createNotification(
-          "credit_refund",
-          interpolateString(successMessage, {
-            credits: creditsToWithdraw.toString(),
-            currency: form.recipientCurrency,
-          }),
-          "success"
-        );
-      } else if (transferResult?.status === "error") {
-        const errorTemplate = getTranslation("withdraw.error", language);
-        await handleWithdrawalError(
-          interpolateString(errorTemplate, {
-            error: transferResult.error || "Unknown error",
-          }),
-          creditsToWithdraw,
-          transferResult.step || "unknown"
-        );
-      }
     } catch (error) {
       console.error("Withdrawal error:", error);
-      const errorMessage =
-        error instanceof Error ? error.message : "Unknown error occurred";
-      await handleWithdrawalError(errorMessage, creditsToWithdraw, "network");
     }
   };
 
-  // Helper function to handle withdrawal errors with credit refund
-  const handleWithdrawalError = async (
-    errorMessage: string,
-    creditsToRefund: number,
-    step?: string
-  ) => {
-    try {
-      const refundSuccess = await addCredits(
-        userID!,
-        creditsToRefund,
-        `Refund for failed withdrawal - ${creditsToRefund} credits to ${form.recipientCurrency}`
-      );
-
-      const stepInfo = step ? ` (Failed at: ${step})` : "";
-
-      if (refundSuccess) {
-        const failedTemplate = getTranslation(
-          "withdraw.notifications.failed",
-          language
-        );
-        createNotification(
-          "credit_refund",
-          interpolateString(failedTemplate, {
-            error: errorMessage,
-            stepInfo: stepInfo,
-          }),
-          "error"
-        );
-      } else {
-        const failedNoRefundTemplate = getTranslation(
-          "withdraw.notifications.failedNoRefund",
-          language
-        );
-        createNotification(
-          "credit_refund",
-          interpolateString(failedNoRefundTemplate, {
-            error: errorMessage,
-            stepInfo: stepInfo,
-          }),
-          "error"
-        );
-      }
-    } catch (refundError) {
-      console.error("Refund error:", refundError);
-      const stepInfo = step ? ` (Failed at: ${step})` : "";
-      const failedNoRefundTemplate = getTranslation(
-        "withdraw.notifications.failedNoRefund",
-        language
-      );
-      createNotification(
-        "credit_refund",
-        interpolateString(failedNoRefundTemplate, {
-          error: errorMessage,
-          stepInfo: stepInfo,
-        }),
-        "error"
-      );
-    }
+  const handleCloseModal = () => {
+    setShowResultModal(false);
+    navigate("/withdrawals");
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      {quoteLoading && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg">
-            <p>{getTranslation("withdraw.fetchingQuote", language)}</p>
+    <div className="min-h-screen bg-gray-50 p-4 relative">
+      {/* ✅ Processing overlay */}
+      {loading && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 flex flex-col items-center justify-center z-50 text-center text-white px-6">
+          <div className="animate-spin border-4 border-t-transparent border-white rounded-full w-10 h-10 mb-4"></div>
+          <p className="text-lg font-semibold">
+            {getTranslation("withdraw.processingNotice", language)}
+          </p>
+          <p className="text-sm opacity-90 mt-2">
+            {getTranslation("withdraw.processingSub", language)}
+          </p>
+        </div>
+      )}
+
+      {/* ✅ Result modal (Success / Error) */}
+      {showResultModal && result && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <div className="bg-white rounded-2xl shadow-xl p-6 max-w-sm w-full text-center">
+            <h3
+              className={`text-xl font-bold mb-3 ${
+                result.status === "success" ? "text-green-600" : "text-red-600"
+              }`}
+            >
+              {getTranslation(
+                result.status === "success"
+                  ? "withdraw.result.successTitle"
+                  : "withdraw.result.errorTitle",
+                language
+              )}
+            </h3>
+            <p className="text-gray-700 mb-6">
+              {getTranslation(
+                result.status === "success"
+                  ? "withdraw.result.successMessage"
+                  : "withdraw.result.errorMessage",
+                language
+              )}
+            </p>
+            <button
+              onClick={handleCloseModal}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded font-semibold w-full"
+            >
+              {getTranslation("withdraw.successModal.button", language)}
+            </button>
           </div>
         </div>
       )}
-      {/* Back Button - Outside the main card */}
+
+      {/* rest of form unchanged */}
       <button
         className="mb-4 text-blue-600 hover:text-blue-800 underline flex items-center gap-1"
         onClick={() => navigate(-1)}

@@ -143,10 +143,24 @@ export function NotificationsList() {
         return <CheckCircle className="h-5 w-5 text-green-600" />;
       case "survey_invalid":
         return <AlertCircle className="h-5 w-5 text-red-600" />;
+      case "survey_completed":
+        return <CheckCircle className="h-5 w-5 text-blue-600" />;
       case "credit_refund":
         return <CreditCard className="h-5 w-5 text-blue-600" />;
       case "payment_required":
         return <AlertCircle className="h-5 w-5 text-orange-600" />;
+      case "lottery_winner":
+        return <CreditCard className="h-5 w-5 text-purple-600" />;
+      case "lottery_distributed":
+        return <CreditCard className="h-5 w-5 text-purple-600" />;
+      case "survey_reward":
+        return <CreditCard className="h-5 w-5 text-green-600" />;
+      case "withdrawal":
+        return <CreditCard className="h-5 w-5 text-blue-600" />;
+      case "withdrawal_failed":
+        return <AlertCircle className="h-5 w-5 text-red-600" />;
+      case "withdrawal_successful":
+        return <CheckCircle className="h-5 w-5 text-green-600" />;
       default:
         return <Bell className="h-5 w-5 text-gray-600" />;
     }
@@ -156,19 +170,34 @@ export function NotificationsList() {
     type: Notification["type"],
     read: boolean
   ) => {
-    if (read) return "bg-white hover:bg-gray-50";
+    const base = read ? "bg-gray-50" : "bg-white";
+    if (read) return base;
 
     switch (type) {
       case "survey_live":
-        return "bg-green-50 border-l-4 border-green-500 hover:bg-green-100";
+        return "bg-green-50 border-l-4 border-green-500";
       case "survey_invalid":
-        return "bg-red-50 border-l-4 border-red-500 hover:bg-red-100";
+        return "bg-red-50 border-l-4 border-red-500";
+      case "survey_completed":
+        return "bg-blue-50 border-l-4 border-blue-500";
       case "credit_refund":
-        return "bg-blue-50 border-l-4 border-blue-500 hover:bg-blue-100";
+        return "bg-blue-50 border-l-4 border-blue-500";
       case "payment_required":
-        return "bg-orange-50 border-l-4 border-orange-500 hover:bg-orange-100";
+        return "bg-orange-50 border-l-4 border-orange-500";
+      case "lottery_winner":
+        return "bg-purple-50 border-l-4 border-purple-500";
+      case "lottery_distributed":
+        return "bg-purple-50 border-l-4 border-purple-500";
+      case "survey_reward":
+        return "bg-green-50 border-l-4 border-green-500";
+      case "withdrawal":
+        return "bg-blue-50 border-l-4 border-blue-500";
+      case "withdrawal_failed":
+        return "bg-red-50 border-l-4 border-red-500";
+      case "withdrawal_successful":
+        return "bg-green-50 border-l-4 border-green-500";
       default:
-        return "bg-gray-50 border-l-4 border-gray-500 hover:bg-gray-100";
+        return "bg-gray-50 border-l-4 border-gray-500";
     }
   };
 

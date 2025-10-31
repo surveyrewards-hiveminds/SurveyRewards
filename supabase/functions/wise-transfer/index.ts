@@ -15,7 +15,6 @@ interface WiseTransferRequest {
     | "createQuote"
     | "createRecipient"
     | "createTransfer"
-    | "fundTransfer"
     | "executeWithdrawal";
   data: any;
 }
@@ -41,76 +40,63 @@ serve(async (req) => {
       "Content-Type": "application/json",
     };
 
-    let response: Response;
+    console.log("🔹 Received request action:", action);
 
     switch (action) {
       case "createQuote": {
         const { sourceCurrency, targetCurrency, amount } = data;
-        response = await fetch(
+        console.log("🧾 Creating quote with data:", data);
+
+        const requestBody = {
+          sourceCurrency,
+          targetCurrency,
+          sourceAmount: amount,
+          payOut: "BANK_TRANSFER",
+          preferredPayIn: "BALANCE",
+        };
+
+        const quoteResponse = await fetch(
           `${WISE_API_BASE_V3}/profiles/${wiseProfileId}/quotes`,
-          {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-              sourceCurrency,
-              targetCurrency,
-              sourceAmount: amount,
-              payOut: "BANK_TRANSFER",
-              preferredPayIn: "BALANCE",
-            }),
-          }
+          { method: "POST", headers, body: JSON.stringify(requestBody) }
         );
-        break;
-      }
 
-      case "createRecipient": {
-        const { accountHolderName, currency, details } = data;
-        const accountType = getAccountTypeForCurrency(currency);
+        const quoteText = await quoteResponse.text();
+        console.log("📩 Quote response:", quoteResponse.status, quoteText);
 
-        response = await fetch(`${WISE_API_BASE_V1}/accounts`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            profile: parseInt(wiseProfileId),
-            accountHolderName,
-            currency,
-            type: accountType,
-            ownedByCustomer: true,
-            details,
-          }),
-        });
-        break;
-      }
+        if (!quoteResponse.ok) {
+          const traceId = quoteResponse.headers.get("x-trace-id");
+          throw {
+            message: `Quote creation failed: ${quoteResponse.statusText}`,
+            traceId,
+            requestBody,
+            errorBody: quoteText,
+          };
+        }
 
-      case "createTransfer": {
-        const { targetAccountId, quoteId } = data;
-        response = await fetch(`${WISE_API_BASE_V1}/transfers`, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            targetAccount: targetAccountId,
-            quote: quoteId,
-          }),
-        });
-        break;
-      }
-
-      case "fundTransfer": {
-        const { transferId } = data;
-        response = await fetch(
-          `${WISE_API_BASE_V1}/transfers/${transferId}/payments`,
-          {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-              type: "BALANCE",
-            }),
-          }
+        const quote = JSON.parse(quoteText);
+        const selectedOption = quote.paymentOptions?.find(
+          (opt: any) => opt.payIn === "BALANCE"
         );
-        break;
+
+        const normalizedQuote = {
+          id: quote.id,
+          source: quote.sourceCurrency,
+          target: quote.targetCurrency,
+          sourceAmount: quote.sourceAmount,
+          targetAmount: selectedOption?.targetAmount ?? 0,
+          rate: quote.rate,
+          fee: selectedOption?.fee?.total ?? 0,
+          payIn: selectedOption?.payIn ?? "BALANCE",
+          payOut: selectedOption?.payOut ?? "BANK_TRANSFER",
+        };
+
+        return new Response(JSON.stringify(normalizedQuote), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       case "executeWithdrawal": {
+        console.log("🚀 Executing withdrawal...");
         const result = await executeCompleteWithdrawal(
           data,
           headers,
@@ -124,43 +110,20 @@ serve(async (req) => {
       default:
         throw new Error(`Unknown action: ${action}`);
     }
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Wise API error: ${response.status} ${errorText}`);
-    }
-
-    const result = await response.json();
-
-    // Normalize v3 quote response for frontend compatibility
-    if (action === "createQuote") {
-      const normalized = {
-        id: result.id,
-        source: result.sourceCurrency,
-        target: result.targetCurrency,
-        sourceAmount: result.sourceAmount,
-        targetAmount: result.targetAmount,
-        rate: result.rate,
-        fee:
-          result.fee?.total?.value ??
-          result.paymentOptions?.[0]?.fee?.value ??
-          0,
-      };
-
-      return new Response(JSON.stringify(normalized), {
+  } catch (error: any) {
+    console.error("❌ Error in wise-transfer function:", error);
+    return new Response(
+      JSON.stringify({
+        error: error.message ?? error,
+        traceId: error.traceId ?? null,
+        requestBody: error.requestBody ?? null,
+        errorBody: error.errorBody ?? null,
+      }),
+      {
+        status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    return new Response(JSON.stringify(result), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
-  } catch (error) {
-    console.error("Error in wise-transfer function:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 400,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+      }
+    );
   }
 });
 
@@ -170,6 +133,7 @@ async function executeCompleteWithdrawal(
   wiseProfileId: string
 ) {
   const {
+    user_id,
     sourceCurrency,
     targetCurrency,
     amount,
@@ -178,68 +142,83 @@ async function executeCompleteWithdrawal(
     details,
   } = data;
 
-  try {
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      {
-        global: {
-          headers: {
-            Authorization: `Bearer ${Deno.env.get(
-              "SUPABASE_SERVICE_ROLE_KEY"
-            )}`,
-          },
+  const supabaseClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+    {
+      global: {
+        headers: {
+          Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
         },
-      }
+      },
+    }
+  );
+
+  let withdrawalId: string | null = null;
+
+  try {
+    console.log("🪙 Checking user credits...");
+    const { data: creditsData, error: creditsError } = await supabaseClient
+      .from("credit_transactions")
+      .select("credit_amount")
+      .eq("user_id", user_id);
+
+    if (creditsError)
+      throw new Error(
+        `Unable to fetch credit balance: ${creditsError.message}`
+      );
+
+    const totalCredits = creditsData.reduce(
+      (acc: number, tx: any) => acc + Number(tx.credit_amount),
+      0
     );
+    console.log("✅ Total credits:", totalCredits);
 
-    const { data: config, error: configError } = await supabaseClient
-      .from("app_config")
-      .select("value")
-      .eq("key", "minimum_withdrawal_amount")
-      .single();
-
-    const minimumWithdrawalAmount = configError ? 1000 : Number(config.value);
-
-    if (amount < minimumWithdrawalAmount) {
+    if (totalCredits < amount) {
       return {
         status: "error",
         step: "validation",
-        error: `Withdrawal amount must be at least ${minimumWithdrawalAmount}`,
+        error: `Insufficient credits. You have ${totalCredits} but tried to withdraw ${amount}.`,
       };
     }
 
-    console.log("Step 1: Creating quote...");
+    console.log("💳 Deducting credits...");
+    const { error: deductError } = await supabaseClient
+      .from("credit_transactions")
+      .insert({
+        user_id,
+        transaction_type: "usage",
+        credit_amount: -amount,
+        status: "completed",
+        description: `Withdrawal of ${amount} credits initiated.`,
+      });
+
+    if (deductError)
+      throw new Error(`Failed to deduct credits: ${deductError.message}`);
+
+    console.log("💬 Creating Wise quote...");
+    const quoteBody = {
+      sourceCurrency,
+      targetCurrency,
+      sourceAmount: amount,
+      payOut: "BANK_TRANSFER",
+      preferredPayIn: "BALANCE",
+    };
+
     const quoteResponse = await fetch(
       `${WISE_API_BASE_V3}/profiles/${wiseProfileId}/quotes`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({
-          sourceCurrency,
-          targetCurrency,
-          sourceAmount: amount,
-          payOut: "BANK_TRANSFER",
-          preferredPayIn: "BALANCE",
-        }),
-      }
+      { method: "POST", headers, body: JSON.stringify(quoteBody) }
     );
+    const quoteText = await quoteResponse.text();
+    console.log("📄 Quote response:", quoteResponse.status, quoteText);
 
-    if (!quoteResponse.ok) {
-      const errorText = await quoteResponse.text();
-      return {
-        status: "error",
-        step: "createQuote",
-        error: `Quote creation failed: ${quoteResponse.status} ${errorText}`,
-      };
-    }
+    if (!quoteResponse.ok)
+      throw new Error(`Quote creation failed: ${quoteResponse.statusText}`);
+    const quote = JSON.parse(quoteText);
 
-    const quote = await quoteResponse.json();
-    console.log("Quote created:", quote.id);
-
-    console.log("Step 2: Creating recipient...");
+    console.log("👤 Creating Wise recipient...");
     const accountType = getAccountTypeForCurrency(currency);
-    const recipientPayload = {
+    const recipientBody = {
       profile: parseInt(wiseProfileId),
       accountHolderName,
       currency,
@@ -247,83 +226,124 @@ async function executeCompleteWithdrawal(
       ownedByCustomer: true,
       details,
     };
+
     const recipientResponse = await fetch(`${WISE_API_BASE_V1}/accounts`, {
       method: "POST",
       headers,
-      body: JSON.stringify(recipientPayload),
+      body: JSON.stringify(recipientBody),
     });
+    const recipientText = await recipientResponse.text();
+    console.log(
+      "🏦 Recipient response:",
+      recipientResponse.status,
+      recipientText
+    );
 
-    if (!recipientResponse.ok) {
-      const errorText = await recipientResponse.text();
-      return {
-        status: "error",
-        step: "createRecipient",
-        error: `Recipient creation failed: ${recipientResponse.status} ${errorText}`,
-      };
-    }
+    if (!recipientResponse.ok)
+      throw new Error(
+        `Recipient creation failed: ${recipientResponse.statusText} — ${recipientText}`
+      );
+    const recipient = JSON.parse(recipientText);
 
-    const recipient = await recipientResponse.json();
-    console.log("Recipient created:", recipient.id);
+    console.log("💸 Creating Wise transfer...");
+    const transferBody = {
+      targetAccount: recipient.id,
+      customerTransactionId: crypto.randomUUID(),
+      quoteUuid: quote.id, // 🔑 Use quoteUuid for v3 quotes
+      profile: parseInt(wiseProfileId),
+      details: { reference: "Withdrawal from Saiyoujin" },
+    };
 
-    console.log("Step 3: Creating transfer...");
-    const customerTransactionId = crypto.randomUUID();
     const transferResponse = await fetch(`${WISE_API_BASE_V1}/transfers`, {
       method: "POST",
       headers,
-      body: JSON.stringify({
-        targetAccount: recipient.id,
-        customerTransactionId,
-        quote: quote.id,
-      }),
+      body: JSON.stringify(transferBody),
+    });
+    const transferText = await transferResponse.text();
+    console.log("📦 Transfer response:", transferResponse.status, transferText);
+
+    if (!transferResponse.ok)
+      throw new Error(
+        `Transfer creation failed: ${transferResponse.statusText} — ${transferText}`
+      );
+    const transfer = JSON.parse(transferText);
+
+    console.log("🧾 Inserting withdrawal record into Supabase...");
+    const { data: withdrawal, error: withdrawError } = await supabaseClient
+      .from("withdrawals")
+      .insert({
+        user_id,
+        source_amount: amount,
+        source_currency: sourceCurrency,
+        target_currency: targetCurrency,
+        quote_id: quote.id,
+        transfer_id: transfer.id,
+        recipient_id: recipient.id,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (withdrawError)
+      throw new Error(`Failed to insert withdrawal: ${withdrawError.message}`);
+    withdrawalId = withdrawal.id;
+    console.log("📘 Withdrawal record created:", withdrawalId);
+
+    console.log("🔔 Sending notification to user...");
+    await supabaseClient.from("notifications").insert({
+      user_id,
+      type: "withdrawal",
+      title: "Withdrawal initiated",
+      message: `Your withdrawal of ${amount} credits is being processed.`,
+      data: {
+        withdrawal_status: "pending",
+        wise_transfer_id: transfer.id,
+        amount: amount,
+      },
     });
 
-    if (!transferResponse.ok) {
-      const errorText = await transferResponse.text();
-      return {
-        status: "error",
-        step: "createTransfer",
-        error: `Transfer creation failed: ${transferResponse.status} ${errorText}`,
-      };
-    }
-
-    const transfer = await transferResponse.json();
-    console.log("Transfer created:", transfer.id);
-
-    console.log("Step 4: Funding transfer...");
-    const fundResponse = await fetch(
-      `${WISE_API_BASE_V1}/transfers/${transfer.id}/payments`,
-      {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ type: "BALANCE" }),
-      }
-    );
-
-    if (!fundResponse.ok) {
-      const errorText = await fundResponse.text();
-      return {
-        status: "error",
-        step: "fundTransfer",
-        error: `Funding failed: ${fundResponse.status} ${errorText}`,
-      };
-    }
-
-    const fundResult = await fundResponse.json();
-    console.log("Transfer funded successfully");
-
+    console.log("✅ Withdrawal process completed successfully!");
     return {
       status: "success",
-      transferId: transfer.id,
       quoteId: quote.id,
       recipientId: recipient.id,
-      fundResult,
+      transferId: transfer.id,
     };
   } catch (error: any) {
-    console.error("Error in executeCompleteWithdrawal:", error);
+    console.error("❌ Error in executeCompleteWithdrawal:", error);
+
+    console.log("↩️ Refunding credits (if needed)...");
+    await supabaseClient.from("credit_transactions").insert({
+      user_id,
+      transaction_type: "refund",
+      credit_amount: amount,
+      status: "completed",
+      description: `Refunded ${amount} credits due to withdrawal failure.`,
+    });
+
+    if (withdrawalId) {
+      console.log("🛑 Marking withdrawal as failed:", withdrawalId);
+      await supabaseClient
+        .from("withdrawals")
+        .update({ status: "failed" })
+        .eq("id", withdrawalId);
+    }
+
+    console.log("🔕 Sending failure notification to user...");
+    await supabaseClient.from("notifications").insert({
+      user_id,
+      type: "withdrawal_failed",
+      title: "Withdrawal failed",
+      message: `Your withdrawal of ${amount} credits failed and has been refunded.`,
+      data: {
+        amount: amount,
+      },
+    });
+
     return {
       status: "error",
-      step: "unknown",
-      error: error.message,
+      step: "withdrawal",
+      error: error.message ?? "Unknown error during withdrawal",
     };
   }
 }

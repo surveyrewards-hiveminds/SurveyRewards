@@ -17,6 +17,7 @@
     "@types/lodash": "^4.17.20",
     "axios": "^1.10.0",
     "clsx": "^2.1.0",
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
     "html2canvas": "^1.4.1",
     "jsdom": "^26.1.0",

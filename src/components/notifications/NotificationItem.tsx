@@ -27,7 +27,10 @@ export interface Notification {
     | "payment_required"
     | "lottery_winner"
     | "lottery_distributed"
-    | "survey_reward";
+    | "survey_reward"
+    | "withdrawal"
+    | "withdrawal_failed"
+    | "withdrawal_successful";
   title: string;
   message: string;
   data?: any;
@@ -59,6 +62,12 @@ const getNotificationIcon = (type: Notification["type"]) => {
       return <CreditCard className="h-5 w-5 text-purple-600" />;
     case "survey_reward":
       return <CreditCard className="h-5 w-5 text-green-600" />;
+    case "withdrawal":
+      return <CreditCard className="h-5 w-5 text-blue-600" />;
+    case "withdrawal_failed":
+      return <AlertCircle className="h-5 w-5 text-red-600" />;
+    case "withdrawal_successful":
+      return <CheckCircle className="h-5 w-5 text-green-600" />;
     default:
       return <Bell className="h-5 w-5 text-gray-600" />;
   }
@@ -84,6 +93,12 @@ const getNotificationBgColor = (type: Notification["type"], read: boolean) => {
     case "lottery_distributed":
       return "bg-purple-50 border-l-4 border-purple-500";
     case "survey_reward":
+      return "bg-green-50 border-l-4 border-green-500";
+    case "withdrawal":
+      return "bg-blue-50 border-l-4 border-blue-500";
+    case "withdrawal_failed":
+      return "bg-red-50 border-l-4 border-red-500";
+    case "withdrawal_successful":
       return "bg-green-50 border-l-4 border-green-500";
     default:
       return "bg-gray-50 border-l-4 border-gray-500";

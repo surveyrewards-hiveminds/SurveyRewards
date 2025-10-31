@@ -27,6 +27,7 @@ import SurveyPreview from "./pages/SurveyPreview";
 import VerificationCheckEmail from "./pages/public/VerificationCheckEmail";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import WithdrawalsListPage from "./pages/WithdrawalsListPage";
 
 export default function AppRoutes() {
   return (
@@ -169,7 +170,14 @@ export default function AppRoutes() {
           </VerifiedRoute>
         }
       />
-      ;
+      <Route
+        path="/withdrawals"
+        element={
+          <VerifiedRoute>
+            <WithdrawalsListPage />
+          </VerifiedRoute>
+        }
+      />
       <Route path="/verification-pending" element={<VerificationPending />} />
       <Route
         path="/verification-thank-you"

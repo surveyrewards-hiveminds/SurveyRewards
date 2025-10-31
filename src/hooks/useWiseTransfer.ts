@@ -17,7 +17,8 @@ export function useWiseTransfer() {
     sourceCurrency: string,
     targetCurrency: string,
     amount: number,
-    recipient: { name: string; currency: string; details: any }
+    recipient: { name: string; currency: string; details: any },
+    userID: string
   ) => {
     setLoading(true);
     setResult(null);
@@ -25,6 +26,7 @@ export function useWiseTransfer() {
     try {
       // Execute complete withdrawal flow in one call
       const withdrawalResult = await executeWithdrawal(
+        userID,
         sourceCurrency,
         targetCurrency,
         amount,

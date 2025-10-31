@@ -6,7 +6,7 @@ export interface Notification {
   id: string;
   user_id: string;
   survey_id?: string;
-  type: "survey_live" | "survey_invalid" | "credit_refund" | "payment_required";
+  type: string;
   title: string;
   message: string;
   data?: any;

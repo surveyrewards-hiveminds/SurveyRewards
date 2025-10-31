@@ -59,6 +59,7 @@ export async function fundTransfer(transferId: number) {
 
 // New unified function to execute complete withdrawal
 export async function executeWithdrawal(
+  userID: string,
   sourceCurrency: string,
   targetCurrency: string,
   amount: number,
@@ -67,6 +68,7 @@ export async function executeWithdrawal(
   details: any
 ) {
   return callWiseFunction("executeWithdrawal", {
+    user_id: userID,
     sourceCurrency,
     targetCurrency,
     amount,

@@ -1474,5 +1474,40 @@ const en = {
   "resetPassword.fillAllFields": "Please fill in all required fields.",
   "resetPassword.passwordsDoNotMatch": "Passwords do not match.",
   "resetPassword.success": "Your password has been successfully reset!",
+
+  "withdraw.history.title": "Withdrawal History",
+  "withdraw.history.newWithdrawal": "New Withdrawal",
+  "withdraw.history.loading": "Loading your withdrawals...",
+  "withdraw.history.empty": "No withdrawals found. Start your first one!",
+
+  "withdraw.processingNotice": "Processing your withdrawal request...",
+  "withdraw.processingSub":
+    "This may take a few minutes. Please do not leave or refresh this page.",
+  "withdraw.successModal.title": "Withdrawal Request Submitted",
+  "withdraw.successModal.message":
+    "Your withdrawal request was successful. Please wait for the Administrator to review and approve your withdrawal.",
+  "withdraw.successModal.button": "Go to Withdrawal List",
+  "withdraw.result.successTitle": "Withdrawal Successful",
+  "withdraw.result.errorTitle": "Withdrawal Failed",
+  "withdraw.result.successMessage":
+    "Your withdrawal has been successfully completed.",
+  "withdraw.result.errorMessage":
+    "Unfortunately, your withdrawal could not be completed. Please try again later.",
+
+  "notifications.title.withdrawal": "Withdrawal Initiated",
+  "notifications.withdrawal":
+    "Your withdrawal of {amount} credits is being processed.",
+  "notifications.withdrawal_generic": "Your withdrawal is being processed.",
+
+  "notifications.title.withdrawal_failed": "Withdrawal Failed",
+  "notifications.withdrawal_failed":
+    "Your withdrawal of {amount} credits has failed. Reason: {reason}",
+  "notifications.withdrawal_failed_generic": "Your withdrawal has failed.",
+
+  "notifications.title.withdrawal_successful": "Withdrawal Successful",
+  "notifications.withdrawal_successful":
+    "Your withdrawal of {amount} {currency} was successful.",
+  "notifications.withdrawal_successful_generic":
+    "Your withdrawal was successful.",
 };
 export default en;
