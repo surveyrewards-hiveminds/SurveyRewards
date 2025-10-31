@@ -100,35 +100,38 @@ export function NotificationDetail() {
     }
   };
 
-  const getNotificationColor = (type: Notification["type"], read: boolean) => {
-    const base = read ? "bg-gray-50" : "bg-white";
-    if (read) return base;
-
+  const getNotificationColor = (type: Notification["type"]) => {
     switch (type) {
       case "survey_live":
-        return "bg-green-50 border-l-4 border-green-500";
+        return "text-green-600 bg-green-50 border-green-200";
       case "survey_invalid":
-        return "bg-red-50 border-l-4 border-red-500";
+        return "text-red-600 bg-red-50 border-red-200";
       case "survey_completed":
-        return "bg-blue-50 border-l-4 border-blue-500";
+        return "text-blue-600 bg-blue-50 border-blue-200";
       case "credit_refund":
-        return "bg-blue-50 border-l-4 border-blue-500";
+        return "text-blue-600 bg-blue-50 border-blue-200";
       case "payment_required":
-        return "bg-orange-50 border-l-4 border-orange-500";
+        return "text-orange-600 bg-orange-50 border-orange-200";
+
+      // 🟣 Lottery
       case "lottery_winner":
-        return "bg-purple-50 border-l-4 border-purple-500";
+        return "text-purple-600 bg-purple-50 border-purple-200";
       case "lottery_distributed":
-        return "bg-purple-50 border-l-4 border-purple-500";
+        return "text-purple-600 bg-purple-50 border-purple-200";
+
+      // 🟢 Survey reward
       case "survey_reward":
-        return "bg-green-50 border-l-4 border-green-500";
+        return "text-green-600 bg-green-50 border-green-200";
+
+      // 💸 Withdrawals
       case "withdrawal":
-        return "bg-blue-50 border-l-4 border-blue-500";
+        return "text-blue-600 bg-blue-50 border-blue-200";
       case "withdrawal_failed":
-        return "bg-red-50 border-l-4 border-red-500";
+        return "text-red-600 bg-red-50 border-red-200";
       case "withdrawal_successful":
-        return "bg-green-50 border-l-4 border-green-500";
+        return "text-green-600 bg-green-50 border-green-200";
       default:
-        return "bg-gray-50 border-l-4 border-gray-500";
+        return "text-gray-600 bg-gray-50 border-gray-200";
     }
   };
 
