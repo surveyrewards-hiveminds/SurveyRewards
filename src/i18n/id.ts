@@ -1529,5 +1529,10 @@ const id = {
   "notifications.withdrawal_successful":
     "Penarikan sebesar {amount} {currency} berhasil.",
   "notifications.withdrawal_successful_generic": "Penarikan Anda berhasil.",
+  "withdrawal_list.date": "Tanggal",
+  "withdrawal_list.credit_amount": "Jumlah Kredit",
+  "withdrawal_list.currency": "Mata Uang",
+  "withdrawal_list.status": "Status",
+  "withdrawal_list.transfer_id": "ID Transfer",
 };
 export default id;

@@ -6,6 +6,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { getTranslation } from "../i18n";
 import { useProfile } from "../context/ProfileContext";
 import { enUS, id, ja, zhCN } from "date-fns/locale";
+import { Text } from "../components/language/Text";
 
 interface Withdrawal {
   id: string;
@@ -109,11 +110,21 @@ export default function WithdrawalsListPage() {
             <table className="min-w-full border border-gray-200 text-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Amount</th>
-                  <th className="px-4 py-2 text-left">Currency</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Transfer ID</th>
+                  <th className="px-4 py-2 text-left">
+                    <Text tid="withdrawal_list.date" />
+                  </th>
+                  <th className="px-4 py-2 text-left">
+                    <Text tid="withdrawal_list.credit_amount" />
+                  </th>
+                  <th className="px-4 py-2 text-left">
+                    <Text tid="withdrawal_list.currency" />
+                  </th>
+                  <th className="px-4 py-2 text-left">
+                    <Text tid="withdrawal_list.status" />
+                  </th>
+                  <th className="px-4 py-2 text-left">
+                    <Text tid="withdrawal_list.transfer_id" />
+                  </th>
                 </tr>
               </thead>
               <tbody>

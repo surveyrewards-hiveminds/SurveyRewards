@@ -1400,5 +1400,10 @@ const cn = {
   "notifications.withdrawal_successful":
     "您提取的 {amount} {currency} 已成功到账。",
   "notifications.withdrawal_successful_generic": "您的提现已成功。",
+  "withdrawal_list.date": "日期",
+  "withdrawal_list.credit_amount": "入账金额",
+  "withdrawal_list.currency": "货币",
+  "withdrawal_list.status": "状态",
+  "withdrawal_list.transfer_id": "转账编号",
 };
 export default cn;

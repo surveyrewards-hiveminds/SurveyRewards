@@ -1509,5 +1509,11 @@ const en = {
     "Your withdrawal of {amount} {currency} was successful.",
   "notifications.withdrawal_successful_generic":
     "Your withdrawal was successful.",
+
+  "withdrawal_list.date": "Date",
+  "withdrawal_list.credit_amount": "Credit Amount",
+  "withdrawal_list.currency": "Currency",
+  "withdrawal_list.status": "Status",
+  "withdrawal_list.transfer_id": "Transfer ID",
 };
 export default en;

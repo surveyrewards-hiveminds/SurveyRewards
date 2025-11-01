@@ -78,12 +78,19 @@ serve(async (req) => {
           (opt: any) => opt.payIn === "BALANCE"
         );
 
+        console.log("Option selected for BALANCE payIn:", selectedOption);
+        // print quote without paymentOptions to avoid clutter
+        console.log("✅ Quote created:", {
+          ...quote,
+          paymentOptions: undefined,
+        });
         const normalizedQuote = {
           id: quote.id,
           source: quote.sourceCurrency,
           target: quote.targetCurrency,
           sourceAmount: quote.sourceAmount,
           targetAmount: selectedOption?.targetAmount ?? 0,
+          targetCurrency: selectedOption?.targetCurrency ?? targetCurrency,
           rate: quote.rate,
           fee: selectedOption?.fee?.total ?? 0,
           payIn: selectedOption?.payIn ?? "BALANCE",

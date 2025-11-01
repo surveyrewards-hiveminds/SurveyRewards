@@ -1481,5 +1481,10 @@ const ja = {
   "notifications.withdrawal_successful":
     "{amount} {currency} の出金が完了しました。",
   "notifications.withdrawal_successful_generic": "出金が完了しました。",
+  "withdrawal_list.date": "日付",
+  "withdrawal_list.credit_amount": "クレジット金額",
+  "withdrawal_list.currency": "通貨",
+  "withdrawal_list.status": "ステータス",
+  "withdrawal_list.transfer_id": "送金ID",
 };
 export default ja;

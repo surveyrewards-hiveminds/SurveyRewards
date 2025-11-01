@@ -7,7 +7,6 @@ import { useLanguage } from "../context/LanguageContext";
 import { useWiseQuote } from "../hooks/useWiseQuote";
 import bankCodesID from "../data/bankCodesID.json";
 import bankCodesJP from "../data/bankCodesJP.json";
-import { supabase } from "../lib/supabase";
 import { getTranslation } from "../i18n";
 import { useConfigValue } from "../hooks/useAppConfig";
 
@@ -130,6 +129,10 @@ export default function WithdrawPage() {
   } = useWiseQuote();
   const [feeAccepted, setFeeAccepted] = useState(false);
   const [transferFee, setTransferFee] = useState<number | null>(null);
+  const [totalReceived, setTotalReceived] = useState<number | null>(null);
+  const [targetCurrency, setTargetCurrency] = useState<string>(
+    CURRENCIES[0].code
+  );
   const { value: minimumWithdrawalAmount } = useConfigValue(
     "minimum_withdrawal_amount"
   );
@@ -147,8 +150,19 @@ export default function WithdrawPage() {
 
   // Handle quote changes
   useEffect(() => {
-    if (quote) setTransferFee(quote.fee);
-    else setTransferFee(null);
+    // before set the transfer fee, need to check the source and target currency to avoid wrong fee display
+    if (!quote) {
+      setTransferFee(null);
+      return;
+    }
+
+    const rate = quote.rate; // source to target
+    const totalFee = quote.fee * rate;
+    const totalSource = quote.sourceAmount * rate;
+
+    setTransferFee(Math.round(totalFee));
+    setTotalReceived(Math.round(totalSource - totalFee));
+    setTargetCurrency(quote.target);
   }, [quote]);
 
   // Show modal when result changes
@@ -157,6 +171,11 @@ export default function WithdrawPage() {
       setShowResultModal(true);
     }
   }, [result]);
+
+  const currencyFormatter = new Intl.NumberFormat(language, {
+    style: "currency",
+    currency: targetCurrency,
+  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -519,19 +538,15 @@ export default function WithdrawPage() {
               </div>
             ))}
           </div>
-          {transferFee !== null && (
+          {transferFee !== null && totalReceived !== null && (
             <div className="p-4 bg-yellow-100 border-l-4 border-yellow-500">
               <p>
                 {getTranslation("withdraw.transferFee", language)}:{" "}
-                <strong>
-                  {transferFee} {CURRENCIES[0].code}
-                </strong>
+                <strong>{currencyFormatter.format(transferFee)}</strong>
               </p>
               <p>
                 {getTranslation("withdraw.totalReceived", language)}:{" "}
-                <strong>
-                  {Number(form.credits) - transferFee} {CURRENCIES[0].code}{" "}
-                </strong>
+                <strong>{currencyFormatter.format(totalReceived)}</strong>
               </p>
               <div className="mt-2">
                 <label className="flex items-center">
