@@ -258,7 +258,7 @@ async function executeCompleteWithdrawal(
       customerTransactionId: crypto.randomUUID(),
       quoteUuid: quote.id, // 🔑 Use quoteUuid for v3 quotes
       profile: parseInt(wiseProfileId),
-      details: { reference: "Withdrawal from Saiyoujin" },
+      details: { reference: "Withdrawal from SurveyRewards" },
     };
 
     const transferResponse = await fetch(`${WISE_API_BASE_V1}/transfers`, {
