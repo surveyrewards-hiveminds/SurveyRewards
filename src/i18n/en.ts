@@ -1515,5 +1515,28 @@ const en = {
   "withdrawal_list.currency": "Currency",
   "withdrawal_list.status": "Status",
   "withdrawal_list.transfer_id": "Transfer ID",
+
+  // Admin
+  "admin.users.admin_dashboard": "Admin Dashboard",
+  "admin.users.user": "User",
+  "admin.users.user_list": "User List",
+  "admin.users.loading": "Loading...",
+  "admin.users.view_detail": "View Detail",
+  "admin.users.user_detail": "User Detail",
+  "admin.users.user_not_found": "User not found.",
+  "admin.users.biodata": "Biodata",
+  "admin.users.id": "ID",
+  "admin.users.name": "Name",
+  "admin.users.email": "Email",
+  "admin.users.country_of_residence": "Country of Residence",
+  "admin.users.birth_date": "Birth Date",
+  "admin.users.country_of_birth": "Country of Birth",
+  "admin.users.employment_section": "Employment",
+  "admin.users.employment": "Employment",
+  "admin.users.business_category": "Business Category",
+  "admin.users.company_name": "Company Name",
+  "admin.users.surveys": "Surveys",
+  "admin.users.surveys_created": "Surveys Created",
+  "admin.users.surveys_responded": "Surveys Responded",
 };
 export default en;

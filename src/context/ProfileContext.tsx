@@ -14,7 +14,7 @@ interface ProfileContextType {
   profileUrl: string | null;
   profileName: string;
   userID: string | null;
-  sharedInfo: any | null; // Add this line
+  sharedInfo: any | null;
   isVerified: boolean | null;
   loading: boolean;
   countryOfResidence: string | null;
@@ -24,6 +24,7 @@ interface ProfileContextType {
   refreshProfile: () => Promise<void>;
   fetchFullProfile: () => Promise<ProfileFormData | null>;
   setProfileUrl: (url: string | null) => void;
+  role?: string | null; // Add role to context
 }
 
 const ProfileContext = createContext<ProfileContextType | undefined>(undefined);
@@ -42,6 +43,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   const [currency, setCurrency] = useState<string>("JPY");
   const [fullProfile, setFullProfile] = useState<ProfileFormData | null>(null);
   const [fullProfileLoading, setFullProfileLoading] = useState(false);
+  const [role, setRole] = useState<string | null>(null); // Add role state
 
   const fetchProfile = async () => {
     if (!user) {
@@ -53,6 +55,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       setCountryOfResidence(null);
       setUserID(null);
       setCurrency("JPY");
+      setRole(null);
       return;
     }
 
@@ -60,7 +63,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     const { data, error } = await supabase
       .from("profiles")
       .select(
-        "profile_image, name, shared_info, country_of_residence, currency, is_verified"
+        "profile_image, name, shared_info, country_of_residence, currency, is_verified, role"
       )
       .eq("id", user.id)
       .single();
@@ -73,6 +76,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
       setCountryOfResidence(null);
       setUserID(null);
       setCurrency("JPY");
+      setRole(null);
       return;
     }
     setUserID(user.id);
@@ -80,6 +84,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
     setSharedInfo(data.shared_info || null);
     setIsVerified(data.is_verified || false);
     setCountryOfResidence(data.country_of_residence || null);
+    setRole(data.role || null);
     if (data.profile_image) {
       setProfileUrl(data.profile_image || null);
     } else {
@@ -133,6 +138,7 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
         refreshProfile: fetchProfile,
         fetchFullProfile,
         setProfileUrl,
+        role, // Provide role in context
       }}
     >
       {children}

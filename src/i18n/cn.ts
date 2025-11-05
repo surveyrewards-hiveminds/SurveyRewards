@@ -1405,5 +1405,28 @@ const cn = {
   "withdrawal_list.currency": "货币",
   "withdrawal_list.status": "状态",
   "withdrawal_list.transfer_id": "转账编号",
+
+  // admin
+  "admin.users.admin_dashboard": "管理仪表板",
+  "admin.users.user": "用户",
+  "admin.users.user_list": "用户列表",
+  "admin.users.loading": "加载中...",
+  "admin.users.view_detail": "查看详情",
+  "admin.users.user_detail": "用户详情",
+  "admin.users.user_not_found": "未找到用户。",
+  "admin.users.biodata": "个人资料",
+  "admin.users.id": "编号",
+  "admin.users.name": "姓名",
+  "admin.users.email": "电子邮件",
+  "admin.users.country_of_residence": "居住国家",
+  "admin.users.birth_date": "出生日期",
+  "admin.users.country_of_birth": "出生国家",
+  "admin.users.employment_section": "就业信息",
+  "admin.users.employment": "职业",
+  "admin.users.business_category": "行业类别",
+  "admin.users.company_name": "公司名称",
+  "admin.users.surveys": "问卷调查",
+  "admin.users.surveys_created": "已创建的问卷",
+  "admin.users.surveys_responded": "已回答的问卷",
 };
 export default cn;
