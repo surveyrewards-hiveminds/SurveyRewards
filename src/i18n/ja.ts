@@ -1486,5 +1486,28 @@ const ja = {
   "withdrawal_list.currency": "通貨",
   "withdrawal_list.status": "ステータス",
   "withdrawal_list.transfer_id": "送金ID",
+
+  // admin
+  "admin.users.admin_dashboard": "管理者ダッシュボード",
+  "admin.users.user": "ユーザー",
+  "admin.users.user_list": "ユーザー一覧",
+  "admin.users.loading": "読み込み中...",
+  "admin.users.view_detail": "詳細を見る",
+  "admin.users.user_detail": "ユーザー詳細",
+  "admin.users.user_not_found": "ユーザーが見つかりません。",
+  "admin.users.biodata": "基本情報",
+  "admin.users.id": "ID",
+  "admin.users.name": "名前",
+  "admin.users.email": "メール",
+  "admin.users.country_of_residence": "居住国",
+  "admin.users.birth_date": "生年月日",
+  "admin.users.country_of_birth": "出身国",
+  "admin.users.employment_section": "雇用情報",
+  "admin.users.employment": "職業",
+  "admin.users.business_category": "業種",
+  "admin.users.company_name": "会社名",
+  "admin.users.surveys": "アンケート",
+  "admin.users.surveys_created": "作成したアンケート",
+  "admin.users.surveys_responded": "回答したアンケート",
 };
 export default ja;

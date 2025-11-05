@@ -1534,5 +1534,28 @@ const id = {
   "withdrawal_list.currency": "Mata Uang",
   "withdrawal_list.status": "Status",
   "withdrawal_list.transfer_id": "ID Transfer",
+
+  // admin
+  "admin.users.admin_dashboard": "Dasbor Admin",
+  "admin.users.user": "Pengguna",
+  "admin.users.user_list": "Daftar Pengguna",
+  "admin.users.loading": "Memuat...",
+  "admin.users.view_detail": "Lihat Detail",
+  "admin.users.user_detail": "Detail Pengguna",
+  "admin.users.user_not_found": "Pengguna tidak ditemukan.",
+  "admin.users.biodata": "Biodata",
+  "admin.users.id": "ID",
+  "admin.users.name": "Nama",
+  "admin.users.email": "Email",
+  "admin.users.country_of_residence": "Negara Tempat Tinggal",
+  "admin.users.birth_date": "Tanggal Lahir",
+  "admin.users.country_of_birth": "Negara Kelahiran",
+  "admin.users.employment_section": "Pekerjaan",
+  "admin.users.employment": "Pekerjaan",
+  "admin.users.business_category": "Kategori Bisnis",
+  "admin.users.company_name": "Nama Perusahaan",
+  "admin.users.surveys": "Survei",
+  "admin.users.surveys_created": "Survei yang Dibuat",
+  "admin.users.surveys_responded": "Survei yang Dijawab",
 };
 export default id;

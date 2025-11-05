@@ -16,7 +16,6 @@ import CreditPayments from "./pages/CreditPayments";
 import CreditTransactionsPage from "./pages/CreditTransactionsPage";
 import NotificationsList from "./pages/NotificationsList";
 import NotificationDetail from "./pages/NotificationDetail";
-// import ProtectedRoute from "./components/auth/ProtectedRoute";
 import VerificationPending from "./pages/public/VerificationPending";
 import VerificationThankYou from "./pages/public/VerificationThankYou";
 import VerifiedRoute from "./components/auth/VerifiedRoute";
@@ -28,6 +27,7 @@ import VerificationCheckEmail from "./pages/public/VerificationCheckEmail";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import WithdrawalsListPage from "./pages/WithdrawalsListPage";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
 export default function AppRoutes() {
   return (
@@ -187,6 +187,7 @@ export default function AppRoutes() {
         path="/verification-check-email"
         element={<VerificationCheckEmail />}
       />
+      <Route path="/admin/*" element={<AdminDashboard />} />
     </Routes>
   );
 }

@@ -11,7 +11,7 @@ export default function VerifiedRoute({
   children: React.ReactNode;
 }) {
   const { user, loading: authLoading } = useAuth();
-  const { loading: profileLoading } = useProfile();
+  const { loading: profileLoading, role } = useProfile();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,6 +29,13 @@ export default function VerifiedRoute({
       navigate("/verification-pending", { replace: true });
     }
   }, [authLoading, profileLoading, user, navigate]);
+
+  useEffect(() => {
+    console.log("Role check in VerifiedRoute:", { role });
+    if (!authLoading && !profileLoading && role === "superadmin") {
+      navigate("/admin", { replace: true });
+    }
+  }, [authLoading, profileLoading, role, navigate]);
 
   // Only show loading if we don't have profile data yet
   if (authLoading || profileLoading) return <div>Loading...</div>;
