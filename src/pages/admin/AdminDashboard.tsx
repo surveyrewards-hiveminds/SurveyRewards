@@ -6,6 +6,8 @@ import { countryTranslations } from "../../data/countries";
 import DashboardNavbar from "../../components/navigation/DashboardNavbar";
 import { Text } from "../../components/language/Text";
 import { getTranslation } from "../../i18n";
+import { supabase } from "../../lib/supabase";
+import { useNavigate } from "react-router-dom";
 
 export type Profile = {
   id: string;
@@ -38,6 +40,7 @@ export default function AdminDashboard() {
   const [showUserModal, setShowUserModal] = useState(false);
   const [userPage, setUserPage] = useState(1);
   const { language } = useLanguage();
+  const navigate = useNavigate();
 
   const getCountryName = (countryCode: string | null) => {
     if (!countryCode || !language) return countryCode;
@@ -76,29 +79,42 @@ export default function AdminDashboard() {
       </div>
 
       {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-56 bg-gray-100 shadow-md pt-24 px-6">
-        <h2 className="text-lg font-bold mb-8 text-gray-800">
-          <Text tid="admin.users.admin_dashboard" />
-        </h2>
-        <nav>
-          <ul className="space-y-2">
-            <li>
-              <button
-                className={`w-full text-left px-4 py-2 rounded-lg font-semibold ${
-                  selectedSidebar === "user"
-                    ? "bg-indigo-100 text-indigo-700"
-                    : "hover:bg-gray-200 text-gray-700"
-                }`}
-                onClick={() => {
-                  setSelectedSidebar("user");
-                  setSelectedUser(null);
-                }}
-              >
-                <Text tid="admin.users.user" />
-              </button>
-            </li>
-          </ul>
-        </nav>
+      <aside className="hidden md:flex flex-col w-56 bg-gray-100 shadow-md pt-24 px-6 justify-between">
+        <div>
+          <h2 className="text-lg font-bold mb-8 text-gray-800">
+            <Text tid="admin.users.admin_dashboard" />
+          </h2>
+          <nav>
+            <ul className="space-y-2">
+              <li>
+                <button
+                  className={`w-full text-left px-4 py-2 rounded-lg font-semibold ${
+                    selectedSidebar === "user"
+                      ? "bg-indigo-100 text-indigo-700"
+                      : "hover:bg-gray-200 text-gray-700"
+                  }`}
+                  onClick={() => {
+                    setSelectedSidebar("user");
+                    setSelectedUser(null);
+                  }}
+                >
+                  <Text tid="admin.users.user" />
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div className="mb-8">
+          <button
+            className="w-full px-4 py-2 rounded-lg font-semibold bg-red-100 text-red-700 hover:bg-red-200 transition"
+            onClick={async () => {
+              await supabase.auth.signOut();
+              navigate("/login", { replace: true });
+            }}
+          >
+            <Text tid="sidebar.logout" />
+          </button>
+        </div>
       </aside>
 
       {/* Main Content */}
