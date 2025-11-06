@@ -1364,6 +1364,15 @@ export function SurveyBuilder({
     updateAllTranslationModes(checked ? "auto" : "manual");
   };
 
+  // Automatically add one section on mount if none exist
+  React.useEffect(() => {
+    if (value.length === 0 && selectedLanguage === surveyPrimaryLanguage) {
+      addSection();
+    }
+    // Only run on initial mount and when value changes from empty
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Add a new section
   const addSection = () => {
     const sectionId = crypto.randomUUID();
