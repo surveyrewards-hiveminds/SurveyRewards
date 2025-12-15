@@ -175,24 +175,17 @@ BEGIN
   -- 1. Get User Profile
   SELECT * INTO v_user_profile FROM profiles WHERE profiles.id = auth.uid();
   
-  -- 2. Build Base WHERE Clause - START WITH MINIMAL FILTERING
+  -- 2. Build Base WHERE Clause with all filters
   where_clause := '
     FROM survey_summmary_mv s
-    WHERE 1=1
+    LEFT JOIN survey_responses sr ON sr.survey_id = s.id AND sr.user_id = ' || quote_literal(COALESCE(v_user_profile.id, auth.uid())) || '
+    WHERE sr.id IS NULL
   ';
 
   -- Only exclude own surveys
   IF v_user_profile.id IS NOT NULL THEN
     where_clause := where_clause || ' AND s.creator_id IS DISTINCT FROM ' || quote_literal(v_user_profile.id);
   END IF;
-
-  -- Comment out other filters temporarily for debugging
-  /*
-  -- Exclude responded surveys
-  where_clause := where_clause || ' AND NOT EXISTS (
-       SELECT 1 FROM survey_responses sr 
-       WHERE sr.survey_id = s.id AND sr.user_id = $1
-    )';
 
   -- Quota Check
   where_clause := where_clause || ' AND (
@@ -201,21 +194,25 @@ BEGIN
        OR s.current_response_count < s.target_respondent_count
     )';
 
-  -- Required Info
-  where_clause := where_clause || ' AND NOT EXISTS (
-       SELECT 1
-       FROM jsonb_each_text(s.required_info) AS req(key, val)
-       WHERE val = ''true'' AND LOWER(COALESCE(($2::jsonb) ->> req.key, ''false'')) != ''true''
-    )';
+  -- Required Info Check
+  -- Only exclude if survey requires something the user doesn't have
+  IF v_user_profile.shared_info IS NOT NULL THEN
+    where_clause := where_clause || ' AND NOT EXISTS (
+         SELECT 1
+         FROM jsonb_each_text(s.required_info) AS req(key, val)
+         WHERE val = ''true'' 
+           AND COALESCE((' || quote_literal(v_user_profile.shared_info::text) || '::jsonb) ->> req.key, ''false'') != ''true''
+      )';
+  END IF;
 
-  -- Country Eligibility (User Check)
-  where_clause := where_clause || ' AND (
-       $3::text IS NULL
-       OR s.target_countries IS NULL
-       OR array_length(s.target_countries, 1) = 0
-       OR $3 = ANY(s.target_countries)
-    )';
-  */
+  -- Country Eligibility
+  IF v_user_profile.country_of_residence IS NOT NULL THEN
+    where_clause := where_clause || ' AND (
+         s.target_countries IS NULL
+         OR array_length(s.target_countries, 1) = 0
+         OR ' || quote_literal(v_user_profile.country_of_residence) || ' = ANY(s.target_countries)
+      )';
+  END IF;
 
   -- Dynamic Filters
   IF reward_type_filter IS NOT NULL THEN
@@ -292,36 +289,46 @@ returns table (
   max_price numeric
 )
 language sql
-SECURITY DEFINER -- Fixes infinite recursion
+SECURITY DEFINER
 SET search_path = public
 stable
 as $$
-  with available_surveys as (
+  with user_info as (
+    select id, shared_info, country_of_residence
+    from profiles
+    where id = auth.uid()
+  ),
+  available_surveys as (
     select
       s.min_reward_amount,
       s.max_reward_amount
-    from survey_summmary_mv s -- Use MV
-    join profiles p ON p.id = auth.uid()
+    from survey_summmary_mv s
+    left join survey_responses sr on sr.survey_id = s.id and sr.user_id = auth.uid()
+    cross join user_info u
     where 
-      s.creator_id != auth.uid()
-      and not exists (select 1 from survey_responses sr where sr.survey_id = s.id and sr.user_id = auth.uid())
+      sr.id IS NULL  -- Exclude surveys user has responded to
+      and s.creator_id IS DISTINCT FROM auth.uid()  -- Exclude own surveys
       and (
          s.no_target_respondent
          OR s.target_respondent_count IS NULL
          OR s.current_response_count < s.target_respondent_count
        )
-      -- Required Info Check restored
-      AND NOT EXISTS (
-        SELECT 1
-        FROM jsonb_each_text(s.required_info) AS req(key, val)
-        WHERE val = 'true'
-          AND LOWER(COALESCE((p.shared_info ->> key), 'false')) != 'true'
+      -- Required Info Check - only if user has shared_info
+      and (
+        u.shared_info IS NULL
+        OR NOT EXISTS (
+          SELECT 1
+          FROM jsonb_each_text(s.required_info) AS req(key, val)
+          WHERE val = 'true'
+            AND COALESCE((u.shared_info ->> req.key), 'false') != 'true'
+        )
       )
-      AND (
-        p.country_of_residence IS NULL
+      -- Country Check - only if user has country set
+      and (
+        u.country_of_residence IS NULL
         OR s.target_countries IS NULL
         OR array_length(s.target_countries, 1) = 0
-        OR p.country_of_residence = ANY(s.target_countries)
+        OR u.country_of_residence = ANY(s.target_countries)
       )
   )
   select min(min_reward_amount) as min_price, max(max_reward_amount) as max_price
