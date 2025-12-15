@@ -6,10 +6,11 @@ import {
   FilterOptions,
 } from "../components/survey/SurveyFilters";
 import { Pagination } from "../components/common/Pagination";
+// import { Text } from "../components/language/Text";
+import AnswerStatistics from "../components/statistics/AnswerStatistics";
 import { Survey, SurveyWithTags } from "../types/survey";
 import { supabase } from "../lib/supabase";
-import AnswerStatistics from "../components/statistics/AnswerStatistics";
-import { useAvailableCountries } from "../hooks/useAvailableCountries";
+// import { useAvailableCountries } from "../hooks/useAvailableCountries";
 import { BackButton } from "../components/common/BackButton";
 import { SurveyForm } from "../components/survey/form/SurveyForm";
 import { getTranslation } from "../i18n";
@@ -18,6 +19,7 @@ import { useNavigate } from "react-router-dom";
 import { SortConfig } from "../utils/table";
 import { useTagTranslations } from "../hooks/useTagTranslations";
 import { tagsToSelectOptions } from "../utils/tagTranslation";
+// import AnswerStatistics from "../components/statistics/AnswerStatistics";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -42,7 +44,7 @@ export default function SurveyList() {
     maxPrice: 0,
   });
   const [currentPage, setCurrentPage] = useState(1);
-  const { countries, loading: countryLoading } = useAvailableCountries();
+
 
   const [availableTags, setAvailableTags] = useState<
     { value: string; label: string }[]
@@ -73,6 +75,7 @@ export default function SurveyList() {
 
   const fetchData = async () => {
     const offset = (currentPage - 1) * ITEMS_PER_PAGE;
+
     const { data, error } = await supabase.rpc(
       "get_available_surveys_for_user",
       {
@@ -80,10 +83,6 @@ export default function SurveyList() {
         offset_count: offset,
         reward_type_filter: filters.rewardType || null,
         search_term: searchTerm || null,
-        countries_filter:
-          filters.countries && filters.countries.length > 0
-            ? filters.countries
-            : null,
         min_price: filters.minPrice || null,
         max_price: filters.maxPrice || null,
         sort_key: sortConfig?.key || null,
@@ -92,8 +91,18 @@ export default function SurveyList() {
           filters.tags && filters.tags.length > 0 ? filters.tags : null,
       }
     );
-    setSurveys(data || []);
-    setTotal(data && data.length > 0 ? data[0].total_count ?? 0 : 0);
+
+    if (error) {
+      console.error("Error fetching surveys:", error);
+      setSurveys([]);
+      setTotal(0);
+      setLoading(false);
+      return;
+    }
+
+    const fetchedSurveys = data || [];
+    setSurveys(fetchedSurveys);
+    setTotal(fetchedSurveys.length > 0 ? fetchedSurveys[0].total_count ?? 0 : 0);
     setLoading(false);
   };
 
@@ -103,10 +112,10 @@ export default function SurveyList() {
     fetchData();
   }, [filters, searchTerm, currentPage, sortConfig]);
 
-  // Reset to first page when filters/search change
+  // Reset to first page when filters/search/sort change
   useEffect(() => {
     setCurrentPage(1);
-  }, [filters, searchTerm]);
+  }, [filters, searchTerm, sortConfig]);
 
   useEffect(() => {
     fetchPriceRange();
@@ -126,9 +135,9 @@ export default function SurveyList() {
         surveys={surveys}
         filters={filters}
         onFilterChange={handleFilterChange}
-        countryCodes={countries}
-        isCountryLoading={countryLoading}
-        showCountryFilter={true}
+        // countryCodes={countries}
+        // isCountryLoading={countryLoading}
+        // showCountryFilter={true}
         priceRange={priceRange}
         availableTags={availableTags}
       />

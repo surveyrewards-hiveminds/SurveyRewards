@@ -1,7 +1,8 @@
-import React, { useMemo } from "react";
+// import React, { useMemo } from "react";
+import React from "react";
 import { PriceRangeSlider } from "../common/PriceRangeSlider";
-import { MultiSelect, Option } from "../common/MultiSelect";
-import { getTranslatedCountries } from "../../utils/countryTranslations";
+// import { MultiSelect, Option } from "../common/MultiSelect";
+// import { getTranslatedCountries } from "../../utils/countryTranslations";
 import type { Survey } from "../../types/survey";
 import Select from "react-select";
 import { Text } from "../language/Text";
@@ -53,29 +54,29 @@ export function SurveyFilters({
   surveys,
   filters,
   onFilterChange,
-  showCountryFilter = true,
+  // showCountryFilter = true,
   showStatusFilter = false,
-  countryCodes = [], // Default to empty array if not provided
-  isCountryLoading = false,
+  // countryCodes = [], // Default to empty array if not provided
+  // isCountryLoading = false,
   priceRange = { min: 0, max: 100 }, // Default price range
   availableTags = [], // Default to empty array if not provided
 }: SurveyFiltersProps) {
   const { language } = useLanguage();
 
-  const availableCountries: Option[] = useMemo(() => {
-    const translatedCountries = getTranslatedCountries(
-      language as "en" | "ja" | "cn" | "id"
-    );
+  // const availableCountries: Option[] = useMemo(() => {
+  //   const translatedCountries = getTranslatedCountries(
+  //     language as "en" | "ja" | "cn" | "id"
+  //   );
 
-    return countryCodes.length === 0
-      ? []
-      : translatedCountries
-          .filter((c) => countryCodes.includes(c.code))
-          .map((c) => ({
-            value: c.code,
-            label: c.name,
-          }));
-  }, [countryCodes, language]);
+  //   return countryCodes.length === 0
+  //     ? []
+  //     : translatedCountries
+  //         .filter((c) => countryCodes.includes(c.code))
+  //         .map((c) => ({
+  //           value: c.code,
+  //           label: c.name,
+  //         }));
+  // }, [countryCodes, language]);
 
   const handlePriceRangeChange = (min: number, max: number) => {
     onFilterChange("minPrice", min);
@@ -143,7 +144,7 @@ export function SurveyFilters({
           />
 
           {/* Country Filter */}
-          {showCountryFilter && (
+          {/* {showCountryFilter && (
             <div className="flex-1 flex flex-col justify-center">
               <Select
                 isMulti
@@ -165,7 +166,7 @@ export function SurveyFilters({
                 isLoading={isCountryLoading}
               />
             </div>
-          )}
+          )} */}
         </div>
 
         {/* Right Column - Price Range (becomes bottom on mobile) */}
