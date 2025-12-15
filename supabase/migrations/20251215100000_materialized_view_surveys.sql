@@ -131,8 +131,6 @@ EXECUTE FUNCTION refresh_survey_summary_mv();
 CREATE OR REPLACE FUNCTION get_available_surveys_for_user(
   limit_count integer default 10,
   offset_count integer default 0,
-  -- cursor_id uuid default null, -- Removed cursor args
-  -- cursor_value text default null, 
   reward_type_filter text default null,
   search_term text default null,
   min_price numeric default null,
@@ -161,7 +159,7 @@ RETURNS TABLE (
   updated_at timestamptz,
   title_translations jsonb,
   tags jsonb,
-  total_count integer -- Restored total count
+  total_count integer
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -177,12 +175,19 @@ BEGIN
   -- 1. Get User Profile
   SELECT * INTO v_user_profile FROM profiles WHERE profiles.id = auth.uid();
   
-  -- 2. Build Base WHERE Clause
+  -- 2. Build Base WHERE Clause - START WITH MINIMAL FILTERING
   where_clause := '
     FROM survey_summmary_mv s
-    WHERE s.creator_id != $1
+    WHERE 1=1
   ';
 
+  -- Only exclude own surveys
+  IF v_user_profile.id IS NOT NULL THEN
+    where_clause := where_clause || ' AND s.creator_id IS DISTINCT FROM ' || quote_literal(v_user_profile.id);
+  END IF;
+
+  -- Comment out other filters temporarily for debugging
+  /*
   -- Exclude responded surveys
   where_clause := where_clause || ' AND NOT EXISTS (
        SELECT 1 FROM survey_responses sr 
@@ -200,7 +205,7 @@ BEGIN
   where_clause := where_clause || ' AND NOT EXISTS (
        SELECT 1
        FROM jsonb_each_text(s.required_info) AS req(key, val)
-       WHERE val = ''true'' AND (($2::jsonb) ->> req.key) != ''true''
+       WHERE val = ''true'' AND LOWER(COALESCE(($2::jsonb) ->> req.key, ''false'')) != ''true''
     )';
 
   -- Country Eligibility (User Check)
@@ -210,6 +215,7 @@ BEGIN
        OR array_length(s.target_countries, 1) = 0
        OR $3 = ANY(s.target_countries)
     )';
+  */
 
   -- Dynamic Filters
   IF reward_type_filter IS NOT NULL THEN
@@ -229,11 +235,10 @@ BEGIN
   END IF;
 
   IF tags_filter IS NOT NULL AND array_length(tags_filter, 1) > 0 THEN
-      where_clause := where_clause || ' AND s.tag_ids @> $4';
+      where_clause := where_clause || ' AND s.tag_ids @> ' || quote_literal(tags_filter::text) || '::uuid[]';
   END IF;
 
   -- Build Order Clause
-  -- Standard simple sorting for offset pagination
   IF sort_key = 'name' THEN
      IF lower(sort_direction) = 'asc' THEN
        order_clause := ' ORDER BY s.name ASC, s.id ASC';
@@ -241,7 +246,6 @@ BEGIN
        order_clause := ' ORDER BY s.name DESC, s.id DESC';
      END IF;
   ELSE
-     -- Default created_at
      IF lower(sort_direction) = 'asc' THEN
        order_clause := ' ORDER BY s.created_at ASC, s.id ASC';
      ELSE
@@ -250,7 +254,6 @@ BEGIN
   END IF;
 
   -- Final Query
-  -- Restored COUNT(*) OVER() to support "Page 1 of N"
   final_query := 'SELECT 
     s.id,
     s.creator_id,
@@ -271,12 +274,14 @@ BEGIN
     s.updated_at,
     s.title_translations,
     s.tags,
-    COUNT(*) OVER()::integer as total_count ' || where_clause || order_clause || ' LIMIT $5 OFFSET $6';
+    COUNT(*) OVER()::integer as total_count ' || where_clause || order_clause || ' LIMIT ' || limit_count || ' OFFSET ' || offset_count;
 
-  RETURN QUERY EXECUTE final_query
-  USING v_user_profile.id, v_user_profile.shared_info, v_user_profile.country_of_residence, tags_filter, limit_count, offset_count;
+  RETURN QUERY EXECUTE final_query;
 END;
 $$;
+
+-- Refresh view to ensure data exists immediately
+REFRESH MATERIALIZED VIEW survey_summmary_mv;
 
 
 -- Helper functions updated to use MV
@@ -310,7 +315,7 @@ as $$
         SELECT 1
         FROM jsonb_each_text(s.required_info) AS req(key, val)
         WHERE val = 'true'
-          AND (p.shared_info ->> key) != 'true'
+          AND LOWER(COALESCE((p.shared_info ->> key), 'false')) != 'true'
       )
       AND (
         p.country_of_residence IS NULL
