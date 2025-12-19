@@ -171,6 +171,7 @@ const cn = {
   "surveyTable.noResponses": "暂无回答。",
   "surveyTable.anonymous": "匿名参与者",
   "surveyTable.surveyDescription": "问卷说明",
+  "surveyTable.featured": "精选",
 
   // survey form
   "surveyForm.back": "返回",
@@ -1428,5 +1429,32 @@ const cn = {
   "admin.users.surveys": "问卷调查",
   "admin.users.surveys_created": "已创建的问卷",
   "admin.users.surveys_responded": "已回答的问卷",
+
+  // Admin Dashboard
+  "admin.dashboard.menu": "仪表板",
+  "admin.dashboard.title": "统计仪表板",
+  "admin.dashboard.total_users": "总用户数",
+  "admin.dashboard.total_surveys": "总问卷数",
+  "admin.dashboard.total_responses": "总回答数",
+  "admin.dashboard.country_distribution": "国家用户分布",
+  "admin.dashboard.no_data": "暂无数据",
+  "admin.dashboard.top_countries": "前5个国家",
+
+  // Admin Settings
+  "admin.settings.menu": "设置",
+  "admin.settings.featured_creators": "精选问卷创建者",
+  "admin.settings.featured_creators_desc": "管理在问卷列表中优先显示的创建者。",
+  "admin.settings.current_featured": "当前精选创建者",
+  "admin.settings.no_featured": "暂无精选创建者。",
+  "admin.settings.add_creator": "添加精选创建者",
+  "admin.settings.search_users": "搜索用户",
+  "admin.settings.search_placeholder": "按名称或邮箱搜索...",
+  "admin.settings.no_results": "未找到匹配的用户",
+  "admin.settings.add": "添加",
+  "admin.settings.remove": "删除",
+  "admin.settings.no_name": "无名称",
+  "admin.settings.save_success": "精选创建者更新成功",
+  "admin.settings.save_error": "精选创建者更新失败",
+
 };
 export default cn;

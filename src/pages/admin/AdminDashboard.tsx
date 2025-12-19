@@ -1,13 +1,11 @@
-import React, { useState } from "react";
-import { ModularTable, TableColumn } from "../../components/ModularTable";
-import { useAdminUsers, UserWithCounts } from "../../hooks/useAdminUsers";
-import { useLanguage } from "../../context/LanguageContext";
-import { countryTranslations } from "../../data/countries";
+import { useState } from "react";
 import DashboardNavbar from "../../components/navigation/DashboardNavbar";
 import { Text } from "../../components/language/Text";
-import { getTranslation } from "../../i18n";
 import { supabase } from "../../lib/supabase";
 import { useNavigate } from "react-router-dom";
+import DashboardStats from "../../components/admin/DashboardStats";
+import UserTable from "../../components/admin/UserTable";
+import FeaturedCreatorsSettings from "../../components/admin/FeaturedCreatorsSettings";
 
 export type Profile = {
   id: string;
@@ -30,46 +28,11 @@ export type Survey = {
   description: string | null;
 };
 
-type SidebarItem = "user" | "survey";
-
-const USER_PAGE_SIZE = 10;
+type SidebarItem = "dashboard" | "users" | "settings";
 
 export default function AdminDashboard() {
-  const [selectedSidebar, setSelectedSidebar] = useState<SidebarItem>("user");
-  const [selectedUser, setSelectedUser] = useState<string | null>(null);
-  const [showUserModal, setShowUserModal] = useState(false);
-  const [userPage, setUserPage] = useState(1);
-  const { language } = useLanguage();
+  const [selectedSidebar, setSelectedSidebar] = useState<SidebarItem>("dashboard");
   const navigate = useNavigate();
-
-  const getCountryName = (countryCode: string | null) => {
-    if (!countryCode || !language) return countryCode;
-    return (
-      countryTranslations[countryCode]?.[
-        language as keyof (typeof countryTranslations)[string]
-      ] || countryCode
-    );
-  };
-
-  const {
-    users,
-    total: usersTotal,
-    loading: usersLoading,
-  } = useAdminUsers(userPage, USER_PAGE_SIZE);
-
-  const userColumns: TableColumn<UserWithCounts>[] = [
-    { key: "id", label: getTranslation("admin.users.id", language) },
-    { key: "name", label: getTranslation("admin.users.name", language) },
-    { key: "email", label: getTranslation("admin.users.email", language) },
-    {
-      key: "surveyCreated",
-      label: getTranslation("admin.users.surveys_created", language),
-    },
-    {
-      key: "surveyResponded",
-      label: getTranslation("admin.users.surveys_responded", language),
-    },
-  ];
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen font-sans bg-gray-50">
@@ -88,17 +51,35 @@ export default function AdminDashboard() {
             <ul className="space-y-2">
               <li>
                 <button
-                  className={`w-full text-left px-4 py-2 rounded-lg font-semibold ${
-                    selectedSidebar === "user"
-                      ? "bg-indigo-100 text-indigo-700"
-                      : "hover:bg-gray-200 text-gray-700"
-                  }`}
-                  onClick={() => {
-                    setSelectedSidebar("user");
-                    setSelectedUser(null);
-                  }}
+                  className={`w-full text-left px-4 py-2 rounded-lg font-semibold ${selectedSidebar === "dashboard"
+                    ? "bg-indigo-100 text-indigo-700"
+                    : "hover:bg-gray-200 text-gray-700"
+                    }`}
+                  onClick={() => setSelectedSidebar("dashboard")}
+                >
+                  <Text tid="admin.dashboard.menu" />
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left px-4 py-2 rounded-lg font-semibold ${selectedSidebar === "users"
+                    ? "bg-indigo-100 text-indigo-700"
+                    : "hover:bg-gray-200 text-gray-700"
+                    }`}
+                  onClick={() => setSelectedSidebar("users")}
                 >
                   <Text tid="admin.users.user" />
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`w-full text-left px-4 py-2 rounded-lg font-semibold ${selectedSidebar === "settings"
+                    ? "bg-indigo-100 text-indigo-700"
+                    : "hover:bg-gray-200 text-gray-700"
+                    }`}
+                  onClick={() => setSelectedSidebar("settings")}
+                >
+                  <Text tid="admin.settings.menu" />
                 </button>
               </li>
             </ul>
@@ -119,181 +100,9 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className="flex-1 mt-20 md:mt-0 p-4 sm:p-6 md:p-8 overflow-x-auto bg-white rounded-t-xl md:rounded-none shadow-sm">
-        {selectedSidebar === "user" && (
-          <div className="w-full mx-auto">
-            <h3 className="text-2xl font-bold text-gray-800 mb-6">
-              <Text tid="admin.users.user_list" />
-            </h3>
-
-            <div className="relative bg-white overflow-hidden">
-              {/* Loading Overlay */}
-              {usersLoading && (
-                <div className="absolute inset-0 bg-white/70 flex items-center justify-center z-10">
-                  <div className="flex flex-col items-center">
-                    <div className="w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                    <p className="text-sm text-gray-500 mt-2">
-                      <Text tid="admin.users.loading" />
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              <ModularTable
-                columns={userColumns}
-                data={users}
-                page={userPage}
-                pageSize={USER_PAGE_SIZE}
-                total={usersTotal}
-                onPageChange={setUserPage}
-                actions={(user: UserWithCounts) => (
-                  <button
-                    className="px-3 py-1.5 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700 transition"
-                    onClick={() => {
-                      setSelectedUser(user.id);
-                      setShowUserModal(true);
-                    }}
-                  >
-                    <Text tid="admin.users.view_detail" />
-                  </button>
-                )}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* User Detail Modal */}
-        {showUserModal && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
-            onClick={() => {
-              setShowUserModal(false);
-              setSelectedUser(null);
-            }}
-          >
-            <div
-              className="relative w-[90%] sm:max-w-md md:max-w-lg max-h-[80vh] overflow-y-auto bg-white rounded-2xl shadow-2xl p-8 transition-transform duration-200"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                className="absolute top-4 right-4 flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 text-lg font-bold"
-                onClick={() => {
-                  setShowUserModal(false);
-                  setSelectedUser(null);
-                }}
-              >
-                ×
-              </button>
-
-              <h4 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                👤 <Text tid="admin.users.user_detail" />
-              </h4>
-
-              {(() => {
-                const user = users.find((u) => u.id === selectedUser);
-                if (!user)
-                  return (
-                    <div className="text-gray-500 italic">
-                      <Text tid="admin.users.user_not_found" />
-                    </div>
-                  );
-
-                return (
-                  <div className="flex flex-col gap-6">
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-                      <h2 className="text-base font-semibold text-gray-700 mb-3">
-                        🧬 <Text tid="admin.users.biodata" />
-                      </h2>
-                      <div className="space-y-1.5 text-gray-800 text-sm sm:text-base">
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.id" />:
-                          </strong>{" "}
-                          {user.id}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.name" />:
-                          </strong>{" "}
-                          {user.name}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.email" />:
-                          </strong>{" "}
-                          {user.email || "-"}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.country_of_residence" />:
-                          </strong>{" "}
-                          {getCountryName(user.country_of_residence)}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.birth_date" />:
-                          </strong>{" "}
-                          {user.birth_date || "-"}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.country_of_birth" />:
-                          </strong>{" "}
-                          {getCountryName(user.country_of_birth)}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-                      <h2 className="text-base font-semibold text-gray-700 mb-3">
-                        💼 <Text tid="admin.users.employment_section" />
-                      </h2>
-                      <div className="space-y-1.5 text-gray-800 text-sm sm:text-base">
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.employment" />:
-                          </strong>{" "}
-                          {user.employment || "-"}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.business_category" />:
-                          </strong>{" "}
-                          {user.business_category || "-"}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.company_name" />:
-                          </strong>{" "}
-                          {user.company_name || "-"}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-5">
-                      <h2 className="text-base font-semibold text-gray-700 mb-3">
-                        📝 <Text tid="admin.users.surveys" />
-                      </h2>
-                      <div className="space-y-1.5 text-gray-800 text-sm sm:text-base">
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.surveys_created" />:
-                          </strong>{" "}
-                          {user.surveyCreated}
-                        </div>
-                        <div>
-                          <strong>
-                            <Text tid="admin.users.surveys_responded" />:
-                          </strong>{" "}
-                          {user.surveyResponded}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            </div>
-          </div>
-        )}
+        {selectedSidebar === "dashboard" && <DashboardStats />}
+        {selectedSidebar === "users" && <UserTable />}
+        {selectedSidebar === "settings" && <FeaturedCreatorsSettings />}
       </main>
     </div>
   );

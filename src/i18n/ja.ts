@@ -175,6 +175,7 @@ const ja = {
   "surveyTable.noResponses": "回答がありません。",
   "surveyTable.anonymous": "匿名参加者",
   "surveyTable.surveyDescription": "アンケートの説明",
+  "surveyTable.featured": "注目",
 
   // survey form
   "surveyForm.back": "戻る",
@@ -1509,5 +1510,32 @@ const ja = {
   "admin.users.surveys": "アンケート",
   "admin.users.surveys_created": "作成したアンケート",
   "admin.users.surveys_responded": "回答したアンケート",
+
+  // Admin Dashboard
+  "admin.dashboard.menu": "ダッシュボード",
+  "admin.dashboard.title": "統計ダッシュボード",
+  "admin.dashboard.total_users": "総ユーザー数",
+  "admin.dashboard.total_surveys": "総アンケート数",
+  "admin.dashboard.total_responses": "総回答数",
+  "admin.dashboard.country_distribution": "国別ユーザー分布",
+  "admin.dashboard.no_data": "データがありません",
+  "admin.dashboard.top_countries": "上位5カ国",
+
+  // Admin Settings
+  "admin.settings.menu": "設定",
+  "admin.settings.featured_creators": "注目のアンケート作成者",
+  "admin.settings.featured_creators_desc": "アンケートリストで優先表示される作成者を管理します。",
+  "admin.settings.current_featured": "現在の注目作成者",
+  "admin.settings.no_featured": "注目作成者はまだいません。",
+  "admin.settings.add_creator": "注目作成者を追加",
+  "admin.settings.search_users": "ユーザーを検索",
+  "admin.settings.search_placeholder": "名前またはメールで検索...",
+  "admin.settings.no_results": "一致するユーザーが見つかりません",
+  "admin.settings.add": "追加",
+  "admin.settings.remove": "削除",
+  "admin.settings.no_name": "名前なし",
+  "admin.settings.save_success": "注目作成者を更新しました",
+  "admin.settings.save_error": "注目作成者の更新に失敗しました",
+
 };
 export default ja;

@@ -175,6 +175,7 @@ const id = {
   "surveyTable.noResponses": "Belum ada tanggapan.",
   "surveyTable.anonymous": "Partisipan Anonim",
   "surveyTable.surveyDescription": "Deskripsi Survei",
+  "surveyTable.featured": "Unggulan",
 
   // survey form
   "surveyForm.back": "Kembali",
@@ -1557,5 +1558,32 @@ const id = {
   "admin.users.surveys": "Survei",
   "admin.users.surveys_created": "Survei yang Dibuat",
   "admin.users.surveys_responded": "Survei yang Dijawab",
+
+  // Admin Dashboard
+  "admin.dashboard.menu": "Dasbor",
+  "admin.dashboard.title": "Dasbor Statistik",
+  "admin.dashboard.total_users": "Total Pengguna",
+  "admin.dashboard.total_surveys": "Total Survei",
+  "admin.dashboard.total_responses": "Total Tanggapan",
+  "admin.dashboard.country_distribution": "Distribusi Pengguna per Negara",
+  "admin.dashboard.no_data": "Tidak ada data",
+  "admin.dashboard.top_countries": "5 Negara Teratas",
+
+  // Admin Settings
+  "admin.settings.menu": "Pengaturan",
+  "admin.settings.featured_creators": "Pembuat Survei Unggulan",
+  "admin.settings.featured_creators_desc": "Kelola pembuat survei yang ditampilkan dan diprioritaskan dalam daftar survei.",
+  "admin.settings.current_featured": "Pembuat Unggulan Saat Ini",
+  "admin.settings.no_featured": "Belum ada pembuat unggulan.",
+  "admin.settings.add_creator": "Tambah Pembuat Unggulan",
+  "admin.settings.search_users": "Cari Pengguna",
+  "admin.settings.search_placeholder": "Cari berdasarkan nama atau email...",
+  "admin.settings.no_results": "Tidak ada pengguna yang cocok",
+  "admin.settings.add": "Tambah",
+  "admin.settings.remove": "Hapus",
+  "admin.settings.no_name": "Tanpa nama",
+  "admin.settings.save_success": "Pembuat unggulan berhasil diperbarui",
+  "admin.settings.save_error": "Gagal memperbarui pembuat unggulan",
+
 };
 export default id;

@@ -163,6 +163,7 @@ export interface SurveyTag {
 
 export interface SurveyWithTags extends Survey {
   tags: Tag[];
+  is_featured?: boolean; // Whether this survey is from a featured creator
   total_count?: number; // present only on the first row for pagination
 }
 
@@ -221,12 +222,12 @@ export interface LegacyBranchingRule {
 
 export interface LegacyBranchingCondition {
   operator:
-    | "equals"
-    | "not_equals"
-    | "contains"
-    | "not_contains"
-    | "greater_than"
-    | "less_than";
+  | "equals"
+  | "not_equals"
+  | "contains"
+  | "not_contains"
+  | "greater_than"
+  | "less_than";
   value: string | number;
   nextSectionId: string | null;
 }
@@ -241,9 +242,9 @@ export interface BranchingConflict {
   priority1: number;
   priority2: number;
   conflictType:
-    | "identical_conditions"
-    | "overlapping_conditions"
-    | "priority_conflict";
+  | "identical_conditions"
+  | "overlapping_conditions"
+  | "priority_conflict";
   description: string;
 }
 

@@ -175,6 +175,7 @@ const en = {
   "surveyTable.noResponses": "No responses yet.",
   "surveyTable.anonymous": "Anonymous Participant",
   "surveyTable.surveyDescription": "Survey Description",
+  "surveyTable.featured": "Featured",
 
   // survey form
   "surveyForm.back": "Back",
@@ -1538,5 +1539,33 @@ const en = {
   "admin.users.surveys": "Surveys",
   "admin.users.surveys_created": "Surveys Created",
   "admin.users.surveys_responded": "Surveys Responded",
+
+  // Admin Dashboard
+  "admin.dashboard.menu": "Dashboard",
+  "admin.dashboard.title": "Statistics Dashboard",
+  "admin.dashboard.total_users": "Total Users",
+  "admin.dashboard.total_surveys": "Total Surveys",
+  "admin.dashboard.total_responses": "Total Responses",
+  "admin.dashboard.country_distribution": "Country User Distribution",
+  "admin.dashboard.no_data": "No data available",
+  "admin.dashboard.top_countries": "Top 5 Countries",
+  "admin.users.no_data": "No data available",
+  "admin.users.top_countries": "Top Countries",
+
+  // Admin Settings
+  "admin.settings.menu": "Settings",
+  "admin.settings.featured_creators": "Featured Survey Creators",
+  "admin.settings.featured_creators_desc": "Manage which survey creators are featured and prioritized in the survey list.",
+  "admin.settings.current_featured": "Current Featured Creators",
+  "admin.settings.no_featured": "No featured creators yet.",
+  "admin.settings.add_creator": "Add Featured Creator",
+  "admin.settings.search_users": "Search Users",
+  "admin.settings.search_placeholder": "Search by name or email...",
+  "admin.settings.no_results": "No users found matching",
+  "admin.settings.add": "Add",
+  "admin.settings.remove": "Remove",
+  "admin.settings.no_name": "No name",
+  "admin.settings.save_success": "Featured creators updated successfully",
+  "admin.settings.save_error": "Failed to update featured creators",
 };
 export default en;

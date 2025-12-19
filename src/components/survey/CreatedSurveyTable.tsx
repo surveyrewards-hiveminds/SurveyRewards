@@ -13,6 +13,50 @@ import { useLanguage } from "../../context/LanguageContext";
 import { Text } from "../language/Text";
 import { useTagTranslations } from "../../hooks/useTagTranslations";
 import type { TagWithTranslations } from "../../types/survey";
+import { useState } from "react";
+
+// Component to display countries in a compact format with tooltip
+function CountryCell({ countries }: { countries: string }) {
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  if (!countries) return <span>-</span>;
+
+  const countryList = countries.split(", ");
+  const maxDisplay = 2;
+  const hasMore = countryList.length > maxDisplay;
+  const displayCountries = countryList.slice(0, maxDisplay);
+  const remainingCount = countryList.length - maxDisplay;
+
+  return (
+    <div className="relative">
+      <div className="flex flex-wrap items-center gap-1">
+        {displayCountries.map((country, idx) => (
+          <span
+            key={idx}
+            className="inline-block px-2 py-0.5 bg-gray-200 text-gray-700 rounded text-xs whitespace-nowrap"
+          >
+            {country}
+          </span>
+        ))}
+        {hasMore && (
+          <span
+            className="inline-block px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs cursor-help whitespace-nowrap"
+            onMouseEnter={() => setShowTooltip(true)}
+            onMouseLeave={() => setShowTooltip(false)}
+          >
+            +{remainingCount} more
+          </span>
+        )}
+      </div>
+      {showTooltip && hasMore && (
+        <div className="absolute z-10 left-0 top-full mt-1 p-2 bg-gray-800 text-white text-xs rounded shadow-lg max-w-xs whitespace-normal">
+          {countries}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 interface CreatedSurveyTableProps {
   surveys: SurveyWithTags[];
@@ -55,8 +99,8 @@ export function CreatedSurveyTable({
           sortConfig.direction === "asc"
             ? "desc"
             : sortConfig.direction === "desc"
-            ? "asc"
-            : "asc",
+              ? "asc"
+              : "asc",
       });
     } else {
       setSortConfig({ key, direction: "asc" });
@@ -83,8 +127,8 @@ export function CreatedSurveyTable({
     if (error) {
       alert(
         getTranslation("alert.error.deleteSurvey", language) +
-          ": " +
-          error.message
+        ": " +
+        error.message
       );
     } else {
       // handle successful deletion
@@ -233,7 +277,7 @@ export function CreatedSurveyTable({
                 </td>
                 <td className="p-4">{formatReward(survey, language)}</td>
                 <td className="p-4">
-                  {formatCountries(survey.target_countries)}
+                  <CountryCell countries={formatCountries(survey.target_countries)} />
                 </td>
                 <td className="p-4">
                   <span
@@ -247,10 +291,10 @@ export function CreatedSurveyTable({
                 <td className="p-4">
                   {survey.created_at
                     ? new Date(survey.created_at).toLocaleDateString(language, {
-                        year: "numeric",
-                        month: "2-digit",
-                        day: "2-digit",
-                      })
+                      year: "numeric",
+                      month: "2-digit",
+                      day: "2-digit",
+                    })
                     : "N/A"}
                 </td>
                 <td className="p-4 text-right">
@@ -264,11 +308,10 @@ export function CreatedSurveyTable({
                     <button
                       onClick={() => handleDeleteSurvey(survey.id || "")}
                       disabled={survey.status !== "draft"}
-                      className={`px-4 py-2 rounded w-full md:w-auto ${
-                        survey.status === "draft"
-                          ? "bg-red-600 text-white hover:bg-red-700"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
+                      className={`px-4 py-2 rounded w-full md:w-auto ${survey.status === "draft"
+                        ? "bg-red-600 text-white hover:bg-red-700"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
                     >
                       <Text tid="surveyTable.actions.delete" />
                     </button>
