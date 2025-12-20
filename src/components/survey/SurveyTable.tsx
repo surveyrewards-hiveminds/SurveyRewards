@@ -153,53 +153,64 @@ export function SurveyTable({
       className={`rounded-lg overflow-hidden ${isAvailable ? "bg-blue-50/80" : "bg-gray-100"
         }`}
     >
+      {/* Horizontal scroll container */}
       <div className="w-full overflow-x-auto">
-        <table className="min-w-full">
+        <table className="w-full" style={{ minWidth: '800px' }}>
           <thead>
             <tr className={`${isAvailable ? "bg-blue-100/80" : "bg-gray-200"}`}>
-              <th className="text-left p-4">
+              <th className="text-left p-4 whitespace-nowrap" style={{ width: '60px' }}>
                 <Text tid="surveyTable.no" />
               </th>
-              <SortableHeader
-                label={getTranslation("surveyTable.surveyName", language)}
-                sortKey="name"
-                currentSort={sortConfig ?? null}
-                onSort={handleSort}
-              />
-              <th className="text-left p-4">
+              <th className="text-left p-4" style={{ minWidth: '200px', maxWidth: '300px' }}>
+                <SortableHeader
+                  label={getTranslation("surveyTable.surveyName", language)}
+                  sortKey="name"
+                  currentSort={sortConfig ?? null}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="text-left p-4 whitespace-nowrap" style={{ minWidth: '150px' }}>
                 <Text tid="surveyTable.tags" />
               </th>
-              <SortableHeader
-                label={getTranslation("surveyTable.rewardType", language)}
-                sortKey="reward_type"
-                currentSort={sortConfig ?? null}
-                onSort={handleSort}
-              />
-              <th className="text-left p-4">
+              <th className="text-left p-4 whitespace-nowrap" style={{ minWidth: '120px' }}>
+                <SortableHeader
+                  label={getTranslation("surveyTable.rewardType", language)}
+                  sortKey="reward_type"
+                  currentSort={sortConfig ?? null}
+                  onSort={handleSort}
+                />
+              </th>
+              <th className="text-left p-4 whitespace-nowrap" style={{ minWidth: '150px' }}>
                 <Text tid="surveyTable.reward" />
               </th>
-              <SortableHeader
-                label={getTranslation("surveyTable.country", language)}
-                sortKey="country"
-                currentSort={sortConfig ?? null}
-                onSort={handleSort}
-              />
+              <th className="text-left p-4 whitespace-nowrap" style={{ minWidth: '180px' }}>
+                <SortableHeader
+                  label={getTranslation("surveyTable.country", language)}
+                  sortKey="country"
+                  currentSort={sortConfig ?? null}
+                  onSort={handleSort}
+                />
+              </th>
               {isAnswered ? (
-                <SortableHeader
-                  label={getTranslation("surveyTable.answeredAt", language)}
-                  sortKey="answered_at"
-                  currentSort={sortConfig ?? null}
-                  onSort={handleSort}
-                />
+                <th className="text-left p-4 whitespace-nowrap" style={{ minWidth: '120px' }}>
+                  <SortableHeader
+                    label={getTranslation("surveyTable.answeredAt", language)}
+                    sortKey="answered_at"
+                    currentSort={sortConfig ?? null}
+                    onSort={handleSort}
+                  />
+                </th>
               ) : (
-                <SortableHeader
-                  label={getTranslation("surveyTable.createdAt", language)}
-                  sortKey="created_at"
-                  currentSort={sortConfig ?? null}
-                  onSort={handleSort}
-                />
+                <th className="text-left p-4 whitespace-nowrap" style={{ minWidth: '120px' }}>
+                  <SortableHeader
+                    label={getTranslation("surveyTable.createdAt", language)}
+                    sortKey="created_at"
+                    currentSort={sortConfig ?? null}
+                    onSort={handleSort}
+                  />
+                </th>
               )}
-              <th className="p-4"></th>
+              <th className="p-4 whitespace-nowrap" style={{ minWidth: '120px' }}></th>
             </tr>
           </thead>
           <tbody>
@@ -209,10 +220,10 @@ export function SurveyTable({
                 className={`border-t ${isAvailable ? "border-blue-200/50" : "border-gray-200"
                   }`}
               >
-                <td className="p-4">{getRowNumber(index)}.</td>
-                <td className="p-4">
-                  <div className="flex items-center gap-2">
-                    <span>
+                <td className="p-4 whitespace-nowrap">{getRowNumber(index)}.</td>
+                <td className="p-4" style={{ minWidth: '200px', maxWidth: '300px' }}>
+                  <div className="flex items-start gap-2">
+                    <span className="line-clamp-3">
                       {getTranslatedSurveyName(
                         {
                           name: survey.name,
@@ -222,7 +233,7 @@ export function SurveyTable({
                       )}
                     </span>
                     {survey.is_featured && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-sm">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-semibold text-white bg-gradient-to-r from-amber-500 to-orange-500 rounded-full shadow-sm whitespace-nowrap flex-shrink-0">
                         <svg
                           className="w-3 h-3"
                           fill="currentColor"
@@ -235,17 +246,17 @@ export function SurveyTable({
                     )}
                   </div>
                 </td>
-                <td className="p-4">
+                <td className="p-4" style={{ minWidth: '150px' }}>
                   <SurveyTags
                     tags={translateTags(survey.tags || [])}
                     onTagClick={onTagClick}
                     interactive={!!onTagClick}
                   />
                 </td>
-                <td className="p-4">
+                <td className="p-4 whitespace-nowrap">
                   {getRewardTypeLabel(survey.reward_type)}
                 </td>
-                <td className="p-4">
+                <td className="p-4 whitespace-nowrap">
                   {isAnswered
                     ? `${survey.per_survey_reward} ${getTranslation(
                       "common.credit",
@@ -253,15 +264,15 @@ export function SurveyTable({
                     )}`
                     : formatReward(survey, language)}
                 </td>
-                <td className="p-4">
+                <td className="p-4" style={{ minWidth: '180px' }}>
                   <CountryCell countries={formatCountries(survey.target_countries)} />
                 </td>
-                <td className="px-4 py-2">
+                <td className="px-4 py-2 whitespace-nowrap">
                   {survey.created_at
                     ? new Date(survey.created_at).toLocaleDateString()
                     : "-"}
                 </td>
-                <td className="p-4 text-right">
+                <td className="p-4 text-right whitespace-nowrap">
                   <button
                     onClick={() => handleSurveyClick(survey)}
                     className={`text-white px-6 py-2 rounded hover:bg-[#020B2C]/90 ${isAvailable
