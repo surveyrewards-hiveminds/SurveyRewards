@@ -41,8 +41,8 @@ export default function Profile() {
   const [modalMessage, setModalMessage] = useState("");
   const [modalTitle, setModalTitle] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
-  const { refreshProfile, fetchFullProfile, fullProfileLoading, fullProfile } =
-    useProfile();
+  const [initialLoading, setInitialLoading] = useState(true); // Track initial load only
+  const { refreshProfile, fetchFullProfile } = useProfile();
   const { user } = useAuth();
   const { language } = useLanguage();
 
@@ -62,15 +62,10 @@ export default function Profile() {
 
   const handleModalClose = () => {
     setModalOpen(false);
-    // If it was a success modal, refresh both profiles and reload form data
+    // If it was a success modal, just refresh the basic profile context
+    // Don't fetch full profile - we already have the correct data in formData
     if (isSuccess) {
-      refreshProfile(); // Refresh the basic profile context
-      // Reload the full profile data
-      fetchFullProfile().then((profileData) => {
-        if (profileData) {
-          setFormData(profileData);
-        }
-      });
+      // refreshProfile(); // Refresh the basic profile context for header/navbar
     }
   };
 
@@ -84,6 +79,10 @@ export default function Profile() {
         .eq("id", user.id);
 
       if (error) throw error;
+
+      // Update local formData immediately with the saved data
+      setFormData(data);
+
       showSuccessModal(getTranslation("profile.updateSuccess", language));
     } catch (err) {
       showErrorModal(
@@ -94,27 +93,50 @@ export default function Profile() {
     }
   };
 
-  const handleImageUpload = (imageUrl: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      profileImage: imageUrl,
-    }));
+  const handleImageUpload = async (imageUrl: string) => {
+    try {
+      if (!user) throw new Error("Not authenticated");
+
+      // Save to database immediately
+      const { error } = await supabase
+        .from("profiles")
+        .update({ profile_image: imageUrl })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      // Update local state after successful database save
+      setFormData((prev) => {
+        return {
+          ...prev,
+          profileImage: imageUrl,
+        };
+      });
+
+      // Refresh the profile context to update avatar in header/navbar
+      await refreshProfile();
+
+      // Don't show modal - just silently update
+      // User will see the image change immediately
+    } catch (err) {
+      console.error("❌ Error uploading image:", err);
+      showErrorModal(
+        err instanceof Error
+          ? err.message
+          : getTranslation("profile.updateError", language)
+      );
+    }
   };
 
   // fetch profile data on component mount
   React.useEffect(() => {
     const loadProfile = async () => {
-      // If fullProfile is already available in context, use it
-      if (fullProfile) {
-        setFormData(fullProfile);
-        return;
-      }
-
-      // Otherwise, fetch the full profile data
+      // Always fetch fresh profile data (don't use cached fullProfile)
       const profileData = await fetchFullProfile();
       if (profileData) {
         setFormData(profileData);
       }
+      setInitialLoading(false); // Mark initial load as complete
     };
 
     loadProfile();
@@ -126,7 +148,7 @@ export default function Profile() {
         <Text tid="profile.myProfile" />
       </h1>
 
-      {fullProfileLoading ? (
+      {initialLoading ? (
         <div className="flex justify-center items-center py-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -163,9 +185,8 @@ export default function Profile() {
       <Modal open={modalOpen} onClose={handleModalClose} title={modalTitle}>
         <div className="text-center">
           <div
-            className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 ${
-              isSuccess ? "bg-green-100" : "bg-red-100"
-            }`}
+            className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 ${isSuccess ? "bg-green-100" : "bg-red-100"
+              }`}
           >
             {isSuccess ? (
               <svg
@@ -201,11 +222,10 @@ export default function Profile() {
           <div className="mt-6">
             <button
               type="button"
-              className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-                isSuccess
-                  ? "bg-green-600 hover:bg-green-700 focus:ring-green-500"
-                  : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
-              }`}
+              className={`inline-flex justify-center rounded-md border border-transparent px-4 py-2 text-sm font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 ${isSuccess
+                ? "bg-green-600 hover:bg-green-700 focus:ring-green-500"
+                : "bg-red-600 hover:bg-red-700 focus:ring-red-500"
+                }`}
               onClick={handleModalClose}
             >
               OK

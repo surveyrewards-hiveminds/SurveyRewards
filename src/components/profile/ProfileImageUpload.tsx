@@ -17,6 +17,15 @@ export function ProfileImageUpload({
   const { language } = useLanguage();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  // Track the displayed image independently to avoid parent re-render issues
+  const [displayedImage, setDisplayedImage] = useState(currentImage);
+
+  // Update displayed image when currentImage prop changes
+  React.useEffect(() => {
+    if (currentImage) {
+      setDisplayedImage(currentImage);
+    }
+  }, [currentImage]);
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -41,8 +50,8 @@ export function ProfileImageUpload({
     if (error) {
       alert(
         getTranslation("alert.error.uploadMedia", language) +
-          ": " +
-          error.message
+        ": " +
+        error.message
       );
       setUploading(false);
       return;
@@ -54,6 +63,9 @@ export function ProfileImageUpload({
       .getPublicUrl(filePath);
 
     if (data?.publicUrl) {
+      // Update displayed image immediately
+      setDisplayedImage(data.publicUrl);
+      // Then call the parent callback
       onImageUpload(data.publicUrl);
     } else {
       alert(getTranslation("alert.success.failGetPublicURL", language));
@@ -61,14 +73,24 @@ export function ProfileImageUpload({
     setUploading(false);
   };
 
+  // Compute cache-busted URL directly
+  const imageUrl = displayedImage ? `${displayedImage}?t=${new Date().getTime()}` : null;
+
+  // Debug: Log when currentImage changes
+  React.useEffect(() => {
+    console.log("🎨 ProfileImageUpload received new currentImage:", currentImage);
+    console.log("🎨 Cache-busted imageUrl:", imageUrl);
+  }, [currentImage, imageUrl]);
+
   return (
     <div className="flex items-center space-x-6">
       <div className="relative w-24 h-24">
-        {currentImage ? (
+        {imageUrl ? (
           <img
-            src={currentImage}
+            src={imageUrl}
             alt="Profile"
             className="w-24 h-24 rounded-full object-cover"
+            key={currentImage} // Force re-render when URL changes
           />
         ) : (
           <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center">
