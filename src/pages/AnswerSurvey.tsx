@@ -130,9 +130,31 @@ export default function AnswerSurvey() {
 
       // 3. Check eligibility: required_info vs profile.shared_info
       const requiredInfo = surveyRow.required_info || {};
+
+      console.log('=== Eligibility Check Debug ===');
+      console.log('Survey required_info:', requiredInfo);
+      console.log('User shared_info:', sharedInfo);
+
       const missingRequired = Object.entries(requiredInfo)
-        .filter(([key, val]) => val === true && sharedInfo[key] !== true)
+        .filter(([key, val]) => {
+          // Convert to string for comparison (handles both "true" and true)
+          const isRequired = String(val) === 'true';
+          const userHasInfo = String(sharedInfo?.[key]) === 'true';
+
+          console.log(`Checking ${key}:`, {
+            surveyValue: val,
+            userValue: sharedInfo?.[key],
+            isRequired,
+            userHasInfo,
+            missing: isRequired && !userHasInfo
+          });
+
+          return isRequired && !userHasInfo;
+        })
         .map(([key]) => key);
+
+      console.log('Missing required fields:', missingRequired);
+      console.log('=== End Debug ===');
 
       if (missingRequired.length > 0) {
         setError("answerSurvey.notEligible");
