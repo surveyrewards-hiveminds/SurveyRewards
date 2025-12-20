@@ -54,6 +54,10 @@ export function mapProfileToDb(profile: ProfileFormData) {
     });
   }
 
+  // SECURITY: Always enforce countryOfResidence to be 'true' 
+  // This prevents users from bypassing the disabled checkbox via DevTools
+  sharedInfoAsStrings.countryOfResidence = 'true';
+
   return {
     name: profile.name,
     birth_date: profile.birthDate,
